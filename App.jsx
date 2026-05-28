@@ -674,3 +674,5 @@ function MapModal({ open, onClose, place, address }) {
 
 // Mount
 ReactDOM.createRoot(document.getElementById("app")).render(<Invitation />);
+
+export default Invitation;

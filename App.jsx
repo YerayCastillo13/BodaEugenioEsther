@@ -1,4 +1,4 @@
-const { useState, useEffect, useRef, useMemo } = React;
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 // ------- SVG ornaments inline -------
 const BotanicalTop = ({ className = "" }) => (

@@ -246,7 +246,7 @@ function Invitation() {
   }, []);
   const { days, hours, minutes, seconds } = useCountdown(targetDate);
 
-  const [musicOn, setMusicOn] = useState(true);
+  const [musicOn, setMusicOn] = useState(false);
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState("");
   const [lightbox, setLightbox] = useState(null);
@@ -291,6 +291,29 @@ function Invitation() {
       showToast("⏸️ Música pausada");
     }
   }, [musicOn]);
+
+  // Intento de autoplay la primera vez que visita la web
+  useEffect(() => {
+    try {
+      const done = localStorage.getItem('musicAutoplayDone');
+      if (!done) {
+        // Esperamos un poco a que el audio esté montado
+        setTimeout(() => {
+          if (!audioRef.current) return;
+          audioRef.current.play().then(() => {
+            setMusicOn(true);
+            showToast('🎵 Música activada automáticamente');
+          }).catch(() => {
+            // Si el navegador bloquea autoplay, mostramos pista
+            showToast('Pulsa el botón para reproducir la música');
+          });
+          localStorage.setItem('musicAutoplayDone', '1');
+        }, 300);
+      }
+    } catch (e) {
+      // fallar silenciosamente
+    }
+  }, []);
 
   const toggleMusic = () => {
     setMusicOn(!musicOn);

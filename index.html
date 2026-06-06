@@ -62,22 +62,17 @@
     }
   }
   
-  section {
-    animation: slideInUp 0.8s ease-out forwards;
-    opacity: 0;
-  }
-  section:nth-of-type(1) { animation-delay: 0s; }
-  section:nth-of-type(2) { animation-delay: 0.15s; }
-  section:nth-of-type(3) { animation-delay: 0.3s; }
-  section:nth-of-type(n+4) {
-    animation: slideInUp 0.6s ease-out forwards;
+  /* Clases que se aplican cuando el elemento entra en viewport */
+  section.animate-in {
+    animation: slideInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
   
-  .event-card {
-    animation: scaleIn 0.6s ease-out;
+  .event-card.animate-in {
+    animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
-  .fiesta-card {
-    animation: fadeIn 0.5s ease-out;
+  
+  .fiesta-card.animate-in {
+    animation: fadeIn 0.5s ease-out forwards;
   }
   /* outer device-like frame so the page sits centered on a grey backdrop */
   .stage {

@@ -1,5 +1,29 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 
+// Hook para detectar cuando un elemento entra en viewport
+function useInView(ref, threshold = 0.1) {
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold, rootMargin: "50px" }
+    );
+
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [ref, threshold]);
+
+  return isInView;
+}
+
 // ------- SVG ornaments inline -------
 const BotanicalTop = ({ className = "" }) => (
   // delicate hand-drawn botanical sprig — two stems with leaves and tiny berries
@@ -230,6 +254,22 @@ function Invitation() {
   // Referencia para el audio
   const audioRef = useRef(null);
 
+  // Refs para las secciones que se animarán
+  const countdownRef = useRef(null);
+  const eventCardRef = useRef(null);
+  const galleryRef = useRef(null);
+  const fiestaRef = useRef(null);
+  const giftsRef = useRef(null);
+  const igRef = useRef(null);
+
+  // Detectar cuando cada sección entra en viewport
+  const countdownInView = useInView(countdownRef);
+  const eventInView = useInView(eventCardRef);
+  const galleryInView = useInView(galleryRef);
+  const fiestaInView = useInView(fiestaRef);
+  const giftsInView = useInView(giftsRef);
+  const igInView = useInView(igRef);
+
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2400);
@@ -305,7 +345,7 @@ function Invitation() {
       {/* <SectionDivider from="#faf5ec" to="#ffffff" /> */}
 
       {/* ======= COUNTDOWN ======= */}
-      <section className="block" style={{ paddingTop: 36, paddingBottom: 48 }}>
+      <section ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ paddingTop: 36, paddingBottom: 48 }}>
         <h2 className="countdown-title">Faltan</h2>
         <div className="counters">
           {[
@@ -356,7 +396,7 @@ function Invitation() {
       </div> */}
       
       <section className="confirm">
-        <div className="event-card">
+        <div ref={eventCardRef} className={`event-card ${eventInView ? 'animate-in' : ''}`}>
           <div className="event-icon"><RingsIcon /></div>
           <h3>Ceremonia<br/>&<br/>Celebración</h3>
           <AdornoSmall className="event-divider" />
@@ -372,7 +412,7 @@ function Invitation() {
       <SectionDivider from="#ffffff" to="#ffffff" />
 
       {/* ======= CONFIRMAR ASISTENCIA ======= */}
-      <section className="confirm">
+      <section className="confirm animate-in">
         {/* <h2 className="section-title">Confirmación de asistencia</h2>
         <p className="lead event-detail">Es importante que confirmes tu asistencia</p>
         <button className="btn-pill lg" onClick={() => setModal("confirm")}>Confirmar asistencia</button> */}
@@ -390,12 +430,12 @@ function Invitation() {
       <SectionDivider from="#ffffff" to="#ffffff" />
 
       {/* ======= GALERÍA ======= */}
-      <Gallery photos={photos} onOpen={(i) => setLightbox(i)} />
+      <Gallery ref={galleryRef} inView={galleryInView} photos={photos} onOpen={(i) => setLightbox(i)} />
 
       <SectionDivider from="#ffffff" to="#ffffff" />
 
       {/* ======= FIESTA ======= */}
-      <section className="fiesta-intro">
+      <section ref={fiestaRef} className={`fiesta-intro ${fiestaInView ? 'animate-in' : ''}`}>
         <h2 className="section-title">Fiesta</h2>
         <p className="lead">Hagamos juntos una fiesta única. Os dejamos algunos detalles a tener en cuenta.</p>
       </section>
@@ -403,8 +443,8 @@ function Invitation() {
       <div className="fiesta-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
         {/* <FiestaCard title="Música" icon={<MusicNote />} text="¿Cuál es la canción que no debe faltar en la playlist de la fiesta?" cta="Sugerir canción" onClick={() => setModal("musica")} /> */}
         {/* <FiestaCard title="Dress Code" icon={<BowTie />} text="Una orientación para tu vestuario" cta="Ver más" onClick={() => setModal("dress")} /> */}
-        <FiestaCard large title="Tips y Notas" icon={<ClipboardIcon />} text="Información adicional para tener en cuenta" cta="+ Info" onClick={() => setModal("tips")} />
-        <FiestaCard large title="Alojamientos" icon={<HotelIcon />} text="Opciones de hospedaje recomendadas" cta="+ Info" onClick={() => setModal("alojamientos")} />
+        <FiestaCard inView={fiestaInView} large title="Tips y Notas" icon={<ClipboardIcon />} text="Información adicional para tener en cuenta" cta="+ Info" onClick={() => setModal("tips")} />
+        <FiestaCard inView={fiestaInView} large title="Alojamientos" icon={<HotelIcon />} text="Opciones de hospedaje recomendadas" cta="+ Info" onClick={() => setModal("alojamientos")} />
       </div>
 
       {/* <div className="fiesta-grid two">
@@ -414,7 +454,7 @@ function Invitation() {
       <SectionDivider from="#ffffff" to="#ffffff" />
 
       {/* ======= REGALOS ======= */}
-      <section className="gifts">
+      <section ref={giftsRef} className={`gifts ${giftsInView ? 'animate-in' : ''}`}>
         <h2 className="section-title">Regalos</h2>
         <p className="lead">Si deseáis regalarnos algo más que vuestra hermosa presencia&hellip;</p>
         <div className="gift-icon"><GiftIcon /></div>
@@ -424,7 +464,7 @@ function Invitation() {
       <SectionDivider from="#ffffff" to="#ffffff" />
 
       {/* ======= INSTAGRAM ======= */}
-      <section className="ig">
+      <section ref={igRef} className={`ig ${igInView ? 'animate-in' : ''}`}>
         <h2 className="section-title">Compartimos este día junto a ti</h2>
         <p className="lead">Comparte tus fotos y vídeos de este hermoso día</p>
         <div className="ig-icon"><InstagramIcon /></div>
@@ -524,7 +564,9 @@ function Invitation() {
 }
 
 // ------- Gallery carousel -------
-function Gallery({ photos, onOpen }) {
+function Gallery(props) {
+  const { photos, onOpen, inView } = props;
+  const ref = useRef(null);
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
@@ -547,7 +589,7 @@ function Gallery({ photos, onOpen }) {
   };
 
   return (
-    <section className="gallery-wrap">
+    <section ref={ref} className={`gallery-wrap ${inView ? 'animate-in' : ''}`}>
       <h2 className="section-title">Retratos de Nuestro Amor</h2>
       <p className="lead">Un minuto, un segundo, un instante que queda en la eternidad</p>
       <div className="camera-icon"><CameraIcon /></div>
@@ -593,9 +635,9 @@ function Gallery({ photos, onOpen }) {
   );
 }
 
-function FiestaCard({ title, icon, text, cta, onClick, large }) {
+function FiestaCard({ title, icon, text, cta, onClick, large, inView }) {
   return (
-    <div className={`fiesta-card ${large ? "large" : ""}`}>
+    <div className={`fiesta-card ${large ? "large" : ""} ${inView ? 'animate-in' : ''}`}>
       <h4>{title}</h4>
       <div className="fiesta-icon">{icon}</div>
       <p>{text}</p>

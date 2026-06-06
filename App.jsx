@@ -312,6 +312,7 @@ function Invitation() {
           ref={audioRef}
           src="/musica/dtmf.mp3"
           loop
+          autoPlay={true}
           style={{ display: 'none' }}
         />
         
@@ -546,7 +547,7 @@ function Invitation() {
           <button className="btn-pill outline" onClick={() => { setModal(null); showToast("Archivo .ics descargado"); }}>Apple / Outlook (.ics)</button>
         </div>
       </SimpleModal>
-      <MapModal open={modal === "map1" || modal === "map2"} onClose={() => setModal(null)} place={modal === "map1" ? "Vara Restaurante & Eventos" : "Salón de fiestas Avril"} address={modal === "map1" ? "Av. Pergamino 203 - Barcelona" : "Av. Los Reartes 12 - Barcelona"} />
+      <MapModal open={modal === "map1" || modal === "map2"} onClose={() => setModal(null)} place={modal === "map1" ? "Vara Restaurante & Eventos" : "Salón de fiestas Avril"} address={modal === "map1" ? "A-42, Km 31, Illecas. 45200 Toledo" : "Av. Los Reartes 12 - Barcelona"} />
 
       {/* Lightbox */}
       {lightbox !== null && (

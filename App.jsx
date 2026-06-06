@@ -354,8 +354,9 @@ function Invitation() {
           <button className="btn-pill" onClick={() => setModal("map2")}>¿Cómo llegar?</button>
         </div>
       </div> */}
-
-      <div className="event-card">
+      
+      <section className="confirm">
+        <div className="event-card">
           <div className="event-icon"><RingsIcon /></div>
           <h3>Ceremonia<br/>&<br/>Celebración</h3>
           <AdornoSmall className="event-divider" />
@@ -366,6 +367,7 @@ function Invitation() {
           <p className="event-detail">Vara Restaurante & Eventos<br />A-42, Km 31, 45200<br />Illescas<br />Toledo</p>
           <button className="btn-pill" onClick={() => setModal("map1")}>¿Cómo llegar?</button>
         </div>
+      </section>      
 
       <SectionDivider from="#ffffff" to="#ffffff" />
 

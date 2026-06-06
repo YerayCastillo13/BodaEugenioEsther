@@ -226,22 +226,48 @@ function Invitation() {
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState("");
   const [lightbox, setLightbox] = useState(null);
-
-  // Canción de Spotify
+  
+  // Referencia para el audio
+  const audioRef = useRef(null);
   const spotifyTrackId = "3sK8wGT43QFpWrvNQsrQya";
-  const spotifyUrl = `https://open.spotify.com/track/${spotifyTrackId}`;
 
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2400);
   };
 
-  const toggleMusic = () => {
-    if (!musicOn) {
-      // Abre Spotify cuando se activa
-      window.open(spotifyUrl, "_blank");
-      showToast("🎵 Abriendo en Spotify...");
+  // Cargar y reproducir/pausar música
+  useEffect(() => {
+    if (!audioRef.current) return;
+    
+    if (musicOn) {
+      audioRef.current.play().catch(err => {
+        console.log("Error reproduciendo:", err);
+        showToast("No se pudo reproducir la música");
+        setMusicOn(false);
+      });
+    } else {
+      audioRef.current.pause();
     }
+  }, [musicOn]);
+
+  // Obtener URL de preview de Spotify
+  useEffect(() => {
+    if (!audioRef.current) return;
+    
+    fetch(`https://api.spotify.com/v1/tracks/${spotifyTrackId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.preview_url) {
+          audioRef.current.src = data.preview_url;
+        } else {
+          showToast("No hay preview disponible");
+        }
+      })
+      .catch(err => console.log("Error:", err));
+  }, []);
+
+  const toggleMusic = () => {
     setMusicOn(!musicOn);
   };
 
@@ -257,31 +283,15 @@ function Invitation() {
     <div className="invite">
       {/* ======= HERO ======= */}
       <section className="hero">
+        <audio 
+          ref={audioRef}
+          loop
+          style={{ display: 'none' }}
+        />
+        
         <button className={`music-toggle ${musicOn ? "playing" : ""}`} onClick={toggleMusic} aria-label="Música">
           <MusicCircle />
         </button>
-
-        {musicOn && (
-          <div style={{
-            marginTop: "20px",
-            padding: "12px",
-            background: "rgba(255, 255, 255, 0.08)",
-            borderRadius: "8px",
-            position: "relative",
-            zIndex: 2
-          }}>
-            <iframe 
-              src={`https://open.spotify.com/embed/track/${spotifyTrackId}?utm_source=generator`}
-              width="100%" 
-              height="152" 
-              frameBorder="0" 
-              allowFullScreen={false}
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-              loading="lazy"
-              style={{ borderRadius: "6px" }}
-            />
-          </div>
-        )}
 
         <BotanicalTop className="hero-top-ornament" />
 

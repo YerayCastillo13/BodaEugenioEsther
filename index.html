@@ -11,7 +11,7 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <style>
-  
+
   :root {
     --gold: #d5b15e;
     --gold-soft: #e0c179;
@@ -774,6 +774,214 @@
     pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ====== Mobile Optimization ====== */
+  @media (max-width: 480px) {
+    .stage { padding: 12px 0; }
+    
+    /* Ornaments */
+    .top-ornament {
+      width: 85px;
+      height: 54px;
+      margin: 0 auto 12px;
+    }
+    .top-ornament-lg {
+      width: 100px;
+      height: 68px;
+      margin: 0 auto 16px;
+    }
+    
+    /* Hero section */
+    .hero {
+      padding: 16px 16px 40px;
+    }
+    .hero-top-ornament {
+      margin: 4px auto 20px;
+      width: 180px;
+      height: 56px;
+    }
+    .hero-names {
+      font-size: 32px;
+      line-height: 1;
+    }
+    .amp {
+      width: 22px !important;
+      height: 22px !important;
+      font-size: 14px !important;
+      vertical-align: 4px !important;
+      margin: 0 4px !important;
+    }
+    .hero-date {
+      gap: 10px;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .hero-date svg { width: 30px; height: 10px; }
+    .hero-rule { 
+      width: 200px;
+      margin: 10px auto 8px;
+    }
+    .hero-sub {
+      font-size: 16px;
+    }
+    .quote {
+      margin: 20px auto 0;
+      font-size: 12px;
+      padding: 8px 0;
+    }
+    .quote-mark { font-size: 36px; }
+    .quote-mark.top { margin-bottom: 8px; }
+    .quote-mark.bottom { margin-top: 10px; }
+    
+    /* Wave dividers */
+    .wave { height: 8px; }
+    
+    /* Standard sections */
+    section.block {
+      padding: 20px 16px 24px;
+    }
+    
+    /* Countdown */
+    .countdown-title { font-size: 20px; margin-bottom: 12px; }
+    .counters {
+      max-width: 280px;
+      gap: 0;
+    }
+    .counter-num { font-size: 26px; }
+    .counter-label { font-size: 9px; margin-top: 3px; }
+    .heart-pulse { margin: 12px auto 0; width: 22px; }
+    
+    /* Countdown inline styles override */
+    section.block[style*="paddingTop"] {
+      padding-top: 14px !important;
+      padding-bottom: 18px !important;
+    }
+    
+    /* Event cards */
+    .event-card {
+      padding: 18px 12px 16px;
+    }
+    .event-icon { width: 42px; height: 42px; margin-bottom: 8px; }
+    .event-card h3 { 
+      font-size: 18px; 
+      line-height: 1.2;
+      margin-bottom: 6px; 
+    }
+    .event-divider { height: 11px; margin: 0 auto 10px; width: 50px; }
+    .event-sub { font-size: 13px; margin: 8px 0 3px; }
+    .event-detail { font-size: 11px; margin-bottom: 9px; line-height: 1.4; }
+    .btn-pill {
+      font-size: 10px;
+      padding: 8px 14px;
+      margin-bottom: 2px;
+    }
+    .btn-pill.lg {
+      font-size: 11px;
+      padding: 9px 18px;
+    }
+    
+    /* Events container */
+    .events {
+      padding: 20px 10px 20px;
+    }
+    
+    /* Confirm section */
+    .confirm {
+      padding: 20px 16px 24px;
+    }
+    .confirm .section-title { font-size: 18px; }
+    
+    /* Gallery */
+    .gallery-wrap {
+      padding: 20px 0 24px;
+    }
+    .gallery-wrap .section-title { font-size: 18px; margin-bottom: 3px; }
+    .gallery-wrap .lead { font-size: 12px; margin-bottom: 12px; }
+    .camera-icon { width: 28px; height: 28px; margin-bottom: 12px; }
+    .carousel { height: 150px; margin-bottom: 10px; }
+    .slide { width: 130px; height: 95px; }
+    .dots { gap: 6px; margin-top: 4px; }
+    .dot { width: 5px; height: 5px; }
+    
+    /* Fiesta section */
+    .fiesta-intro {
+      padding: 20px 16px 10px;
+    }
+    .fiesta-intro .section-title { font-size: 20px; margin-bottom: 3px; }
+    .fiesta-intro .lead { font-size: 12px; }
+    
+    .fiesta-grid {
+      grid-template-columns: repeat(2, 1fr);
+      padding: 10px 8px 8px;
+      gap: 6px;
+    }
+    .fiesta-grid.two {
+      grid-template-columns: 1fr;
+      padding: 4px 8px 20px;
+      max-width: 100%;
+    }
+    .fiesta-card {
+      padding: 12px 8px 12px;
+    }
+    .fiesta-card h4 { font-size: 13px; margin-bottom: 8px; }
+    .fiesta-icon { width: 38px; height: 38px; margin: 1px auto 8px; }
+    .fiesta-card p { font-size: 9px; margin-bottom: 8px; min-height: 18px; }
+    .fiesta-card .btn-pill {
+      font-size: 8px;
+      padding: 5px 10px;
+    }
+    .fiesta-card.large {
+      padding: 14px 10px;
+      grid-column: 1 / -1;
+    }
+    .fiesta-card.large h4 { font-size: 15px; margin-bottom: 6px; }
+    .fiesta-card.large p { font-size: 10px; min-height: 20px; }
+    .fiesta-card.large .fiesta-icon { width: 44px; height: 44px; }
+    
+    /* Gifts section */
+    .gifts {
+      padding: 20px 16px 24px;
+    }
+    .gifts .section-title { font-size: 18px; margin-bottom: 3px; }
+    .gifts .lead { font-size: 12px; margin-bottom: 12px; }
+    .gift-icon { width: 34px; height: 34px; margin: 3px auto 12px; }
+    
+    /* Instagram section */
+    .ig {
+      padding: 20px 16px 24px;
+    }
+    .ig .section-title { font-size: 16px; margin-bottom: 3px; }
+    .ig .lead { font-size: 12px; margin-bottom: 12px; }
+    .ig-icon { width: 26px; height: 26px; margin: 2px auto 10px; }
+    .hashtag { font-size: 17px; margin-bottom: 12px; }
+
+    /* Footer */
+    .footer {
+      padding: 24px 14px 18px;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .footer-names { font-size: 16px; }
+    .footer-names .amp { width: 14px !important; height: 14px !important; font-size: 11px !important; vertical-align: 1px !important; }
+    .footer-rule { width: 80px; margin: 6px 0 4px; }
+    .footer-sub { font-size: 11px; }
+    .footer-links { font-size: 11px; gap: 4px; }
+    .footer-links a { font-size: 11px; }
+    .credit { font-size: 9px; margin-top: 10px; padding-top: 10px; }
+
+    /* Modals */
+    .modal {
+      width: calc(100vw - 24px);
+      max-width: 100%;
+      padding: 20px 16px 16px;
+    }
+    .modal h3 { font-size: 18px; margin-bottom: 3px; }
+    .modal-sub { font-size: 11px; }
+    .modal-icon { width: 60px; height: 60px; margin-bottom: 6px; }
+    .modal .divider { margin: 3px auto 10px; }
+    .modal-field { padding: 8px 10px; font-size: 12px; margin-bottom: 8px; }
+    .modal-row { gap: 6px; flex-wrap: wrap; }
+  }
 </style>
 </head>
 <body>

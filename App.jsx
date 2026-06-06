@@ -246,7 +246,7 @@ function Invitation() {
   }, []);
   const { days, hours, minutes, seconds } = useCountdown(targetDate);
 
-  const [musicOn, setMusicOn] = useState(false);
+  const [musicOn, setMusicOn] = useState(true);
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState("");
   const [lightbox, setLightbox] = useState(null);
@@ -312,7 +312,6 @@ function Invitation() {
           ref={audioRef}
           src="/musica/dtmf.mp3"
           loop
-          autoPlay={true}
           style={{ display: 'none' }}
         />
         

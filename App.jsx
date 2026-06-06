@@ -403,7 +403,7 @@ function Invitation() {
       <div className="fiesta-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
         {/* <FiestaCard title="Música" icon={<MusicNote />} text="¿Cuál es la canción que no debe faltar en la playlist de la fiesta?" cta="Sugerir canción" onClick={() => setModal("musica")} /> */}
         {/* <FiestaCard title="Dress Code" icon={<BowTie />} text="Una orientación para tu vestuario" cta="Ver más" onClick={() => setModal("dress")} /> */}
-        <FiestaCard title="Tips y Notas" icon={<ClipboardIcon />} text="Información adicional para tener en cuenta" cta="+ Info" onClick={() => setModal("tips")} />
+        <FiestaCard large title="Tips y Notas" icon={<ClipboardIcon />} text="Información adicional para tener en cuenta" cta="+ Info" onClick={() => setModal("tips")} />
         <FiestaCard large title="Alojamientos" icon={<HotelIcon />} text="Opciones de hospedaje recomendadas" cta="+ Info" onClick={() => setModal("alojamientos")} />
       </div>
 

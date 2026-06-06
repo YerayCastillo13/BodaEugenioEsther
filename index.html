@@ -35,6 +35,50 @@
     line-height: 1.55;
     font-size: 15px;
   }
+  
+  /* ====== Animaciones Scroll ====== */
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  section {
+    animation: slideInUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
+  section:nth-of-type(1) { animation-delay: 0s; }
+  section:nth-of-type(2) { animation-delay: 0.15s; }
+  section:nth-of-type(3) { animation-delay: 0.3s; }
+  section:nth-of-type(n+4) {
+    animation: slideInUp 0.6s ease-out forwards;
+  }
+  
+  .event-card {
+    animation: scaleIn 0.6s ease-out;
+  }
+  .fiesta-card {
+    animation: fadeIn 0.5s ease-out;
+  }
   /* outer device-like frame so the page sits centered on a grey backdrop */
   .stage {
     min-height: 100vh;
@@ -55,7 +99,7 @@
   /* ====== Section base ====== */
   section.block {
     position: relative;
-    padding: 56px 36px 64px;
+    padding: 32px 36px 36px;
     text-align: center;
     background: var(--white);
   }
@@ -90,7 +134,7 @@
       radial-gradient(circle at 20% 12%, rgba(213, 177, 94, 0.10), transparent 40%),
       radial-gradient(circle at 80% 90%, rgba(213, 177, 94, 0.08), transparent 45%),
       var(--paper);
-    padding: 28px 36px 80px;
+    padding: 20px 36px 50px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -184,14 +228,14 @@
   }
 
   .quote {
-    margin: 44px auto 0;
+    margin: 28px auto 0;
     max-width: 320px;
     color: var(--ink);
     font-family: "Quattrocento", serif;
     font-size: 13px;
-    line-height: 1.65;
+    line-height: 1.5;
     position: relative;
-    padding: 12px 0;
+    padding: 8px 0;
   }
   .quote-mark {
     color: var(--gold);
@@ -210,7 +254,7 @@
     font-weight: 400;
     font-size: 28px;
     color: var(--ink);
-    margin: 0 0 22px;
+    margin: 0 0 14px;
   }
   .counters {
     display: grid;
@@ -246,10 +290,10 @@
     font-size: 11px;
     color: var(--ink-soft);
     letter-spacing: 0.06em;
-    margin-top: 6px;
+    margin-top: 3px;
   }
   .heart-pulse {
-    margin: 22px auto 0;
+    margin: 14px auto 0;
     width: 26px;
     color: var(--gold);
     animation: heart 1.6s ease-in-out infinite;
@@ -324,14 +368,24 @@
   .event-card {
     background: var(--card);
     border-radius: 4px;
-    padding: 32px 18px 26px;
+    padding: 20px 14px 16px;
     text-align: center;
     box-shadow: var(--shadow-card);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translateY(0);
+  }
+  .event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(60, 45, 20, 0.12);
   }
   .event-icon {
     width: 54px; height: 54px;
     margin: 0 auto 14px;
     color: var(--gold);
+    transition: transform 0.3s ease;
+  }
+  .event-card:hover .event-icon {
+    transform: scale(1.1) rotate(5deg);
   }
   .event-card h3 {
     font-family: "Cormorant Garamond", serif;
@@ -343,7 +397,7 @@
   .event-divider {
     display: block;
     width: 60px; height: 14px;
-    margin: 0 auto 16px;
+    margin: 0 auto 10px;
     opacity: 0.85;
   }
   .event-sub {
@@ -352,13 +406,13 @@
     font-style: italic;
     color: var(--ink);
     font-size: 16px;
-    margin: 14px 0 6px;
+    margin: 8px 0 3px;
   }
   .event-detail {
     font-family: "Karla", sans-serif;
     font-size: 12px;
     color: var(--ink-soft);
-    margin: 0 0 14px;
+    margin: 0 0 8px;
     line-height: 1.5;
   }
 
@@ -377,11 +431,15 @@
     border: none;
     cursor: pointer;
     text-decoration: none;
-    transition: background 0.18s ease, transform 0.06s ease;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     box-shadow: 0 1px 0 rgba(0,0,0,0.04);
   }
-  .btn-pill:hover { background: var(--gold-deep); }
-  .btn-pill:active { transform: translateY(1px); }
+  .btn-pill:hover { 
+    background: var(--gold-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(180, 147, 63, 0.3);
+  }
+  .btn-pill:active { transform: translateY(0); }
   .btn-pill.lg {
     font-size: 12px;
     padding: 11px 30px;
@@ -389,7 +447,7 @@
 
   /* ====== Confirmación ====== */
   .confirm {
-    padding: 52px 36px 64px;
+    padding: 32px 36px 36px;
   }
   .confirm .section-title { font-size: 26px; }
   .confirm .lead {
@@ -402,7 +460,7 @@
 
   /* ====== Gallery ====== */
   .gallery-wrap {
-    padding: 52px 0 62px;
+    padding: 32px 0 36px;
     text-align: center;
     background: var(--white);
   }
@@ -412,18 +470,23 @@
     font-style: italic;
     color: var(--gold-deep);
     font-size: 13px;
-    margin: 0 0 22px;
+    margin: 0 0 14px;
   }
   .camera-icon {
     width: 36px; height: 36px;
     color: var(--gold);
-    margin: 0 auto 22px;
+    margin: 0 auto 14px;
     display: block;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
   .carousel {
     position: relative;
     height: 200px;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
   .carousel-track {
     position: absolute; inset: 0;
@@ -456,7 +519,7 @@
 
   /* ====== Fiesta ====== */
   .fiesta-intro {
-    padding: 56px 36px 22px;
+    padding: 32px 36px 12px;
     text-align: center;
     background: var(--white);
   }
@@ -467,6 +530,7 @@
     color: var(--gold-deep);
     font-size: 13px;
     margin: 0 auto;
+    line-height: 1.4;
     max-width: 320px;
   }
   .fiesta-grid {
@@ -489,25 +553,35 @@
     text-align: center;
     box-shadow: var(--shadow-card);
     display: flex; flex-direction: column; align-items: center;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translateY(0);
+  }
+  .fiesta-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(60, 45, 20, 0.14);
   }
   .fiesta-card h4 {
     font-family: "Cormorant Garamond", serif;
     font-weight: 400;
     font-size: 16px;
     color: var(--ink);
-    margin: 0 0 14px;
+    margin: 0 0 8px;
   }
   .fiesta-icon {
     width: 48px; height: 48px;
     color: var(--gold);
     margin: 4px auto 14px;
+    transition: transform 0.3s ease;
+  }
+  .fiesta-card:hover .fiesta-icon {
+    transform: scale(1.15);
   }
   .fiesta-card p {
     font-family: "Karla", sans-serif;
     font-size: 10px;
     color: var(--ink-soft);
-    line-height: 1.55;
-    margin: 0 0 14px;
+    line-height: 1.4;
+    margin: 0 0 8px;
     min-height: 28px;
   }
   .fiesta-card .btn-pill {
@@ -523,7 +597,7 @@
 
   /* ====== Regalos ====== */
   .gifts {
-    padding: 56px 36px 64px;
+    padding: 32px 36px 36px;
     background: var(--white);
     text-align: center;
   }
@@ -533,7 +607,7 @@
     font-style: italic;
     color: var(--gold-deep);
     font-size: 13px;
-    margin: 0 auto 22px;
+    margin: 0 auto 14px;
     max-width: 320px;
   }
   .gift-icon {
@@ -545,7 +619,7 @@
 
   /* ====== Instagram ====== */
   .ig {
-    padding: 56px 36px 64px;
+    padding: 32px 36px 36px;
     background: var(--white);
     text-align: center;
   }
@@ -555,7 +629,7 @@
     font-style: italic;
     color: var(--gold-deep);
     font-size: 13px;
-    margin: 0 0 22px;
+    margin: 0 0 14px;
   }
   .ig-icon {
     width: 32px; height: 32px;
@@ -825,13 +899,14 @@
       font-size: 16px;
     }
     .quote {
-      margin: 20px auto 0;
+      margin: 16px auto 0;
       font-size: 12px;
-      padding: 8px 0;
+      padding: 6px 0;
+      line-height: 1.45;
     }
-    .quote-mark { font-size: 36px; }
-    .quote-mark.top { margin-bottom: 8px; }
-    .quote-mark.bottom { margin-top: 10px; }
+    .quote-mark { font-size: 32px; }
+    .quote-mark.top { margin-bottom: 4px; }
+    .quote-mark.bottom { margin-top: 6px; }
     
     /* Wave dividers */
     .wave { height: 8px; }
@@ -842,14 +917,14 @@
     }
     
     /* Countdown */
-    .countdown-title { font-size: 20px; margin-bottom: 12px; }
+    .countdown-title { font-size: 20px; margin-bottom: 10px; }
     .counters {
       max-width: 280px;
       gap: 0;
     }
     .counter-num { font-size: 26px; }
-    .counter-label { font-size: 9px; margin-top: 3px; }
-    .heart-pulse { margin: 12px auto 0; width: 22px; }
+    .counter-label { font-size: 9px; margin-top: 2px; }
+    .heart-pulse { margin: 10px auto 0; width: 22px; }
     
     /* Countdown inline styles override */
     section.block[style*="paddingTop"] {
@@ -867,9 +942,9 @@
       line-height: 1.2;
       margin-bottom: 6px; 
     }
-    .event-divider { height: 11px; margin: 0 auto 10px; width: 50px; }
-    .event-sub { font-size: 13px; margin: 8px 0 3px; }
-    .event-detail { font-size: 11px; margin-bottom: 9px; line-height: 1.4; }
+    .event-divider { height: 11px; margin: 0 auto 8px; width: 50px; }
+    .event-sub { font-size: 13px; margin: 6px 0 2px; }
+    .event-detail { font-size: 11px; margin-bottom: 7px; line-height: 1.3; }
     .btn-pill {
       font-size: 10px;
       padding: 8px 14px;

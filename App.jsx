@@ -229,14 +229,13 @@ function Invitation() {
   
   // Referencia para el audio
   const audioRef = useRef(null);
-  const spotifyTrackId = "3sK8wGT43QFpWrvNQsrQya";
 
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2400);
   };
 
-  // Cargar y reproducir/pausar música
+  // Reproducir/pausar música
   useEffect(() => {
     if (!audioRef.current) return;
     
@@ -246,26 +245,12 @@ function Invitation() {
         showToast("No se pudo reproducir la música");
         setMusicOn(false);
       });
+      showToast("🎵 Música activada");
     } else {
       audioRef.current.pause();
+      showToast("⏸️ Música pausada");
     }
   }, [musicOn]);
-
-  // Obtener URL de preview de Spotify
-  useEffect(() => {
-    if (!audioRef.current) return;
-    
-    fetch(`https://api.spotify.com/v1/tracks/${spotifyTrackId}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.preview_url) {
-          audioRef.current.src = data.preview_url;
-        } else {
-          showToast("No hay preview disponible");
-        }
-      })
-      .catch(err => console.log("Error:", err));
-  }, []);
 
   const toggleMusic = () => {
     setMusicOn(!musicOn);
@@ -285,6 +270,7 @@ function Invitation() {
       <section className="hero">
         <audio 
           ref={audioRef}
+          src="/musica/dtmf.mp3"
           loop
           style={{ display: 'none' }}
         />

@@ -278,9 +278,6 @@ function Invitation() {
   // Reproducir/pausar música
   useEffect(() => {
 
-
-    debugger;
-
     if (!audioRef.current) return;
     
     if (musicOn) {
@@ -299,9 +296,7 @@ function Invitation() {
   // Intento de autoplay la primera vez que visita la web
   useEffect(() => {
     try {
-      const done = localStorage.getItem('musicAutoplayDone');
-      if (!done) {
-        // Esperamos un poco a que el audio esté montado
+      // Esperamos un poco a que el audio esté montado
         setTimeout(() => {
           if (!audioRef.current) return;
           audioRef.current.play().then(() => {
@@ -311,9 +306,7 @@ function Invitation() {
             // Si el navegador bloquea autoplay, mostramos pista
             showToast('Pulsa el botón para reproducir la música');
           });
-          localStorage.setItem('musicAutoplayDone', '1');
         }, 300);
-      }
     } catch (e) {
       // fallar silenciosamente
     }

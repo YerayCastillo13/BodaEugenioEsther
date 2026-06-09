@@ -313,6 +313,38 @@ function Invitation() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const textEls = document.querySelectorAll(
+      ".hero-names, .hero-date, .hero-sub, .quote, .hero-top-ornament"
+    );
+
+    let targetY = 0;
+    let currentY = 0;
+
+    const onScroll = () => {
+      targetY = window.scrollY;
+    };
+
+    const animate = () => {
+      currentY += (targetY - currentY) * 0.06;
+
+      // MUY IMPORTANTE: efecto pequeño (no compite con el fondo)
+      const move = currentY * 0.05;
+
+      textEls.forEach((el, i) => {
+        const depth = (i + 1) * 0.3; // capas distintas
+        el.style.transform = `translate3d(0, ${move * depth}px, 0)`;
+      });
+
+      requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    animate();
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   // Reproducir/pausar música
   useEffect(() => {
 

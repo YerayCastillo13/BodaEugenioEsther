@@ -522,6 +522,7 @@ function Invitation() {
 
       <SectionDivider from="#ffffff" to="#ffffff" />
 
+
       {/* ======= FOOTER ======= */}
       <footer className="footer">
         <div className="footer-brand">

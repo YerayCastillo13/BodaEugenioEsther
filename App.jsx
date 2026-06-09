@@ -383,7 +383,7 @@ function Invitation() {
           <span className="quote-mark bottom">&rdquo;</span>
         </div>
 
-      <div ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ paddingTop: 36, paddingBottom: 48 }}>
+      <div ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ paddingTop: 0, paddingBottom: 0 }}>
         <h2 className="countdown-title">Faltan...</h2>
         <div className="counters">
           {[
@@ -439,6 +439,8 @@ function Invitation() {
           <button className="btn-pill" onClick={() => setModal("map2")}>¿Cómo llegar?</button>
         </div>
       </div> */}
+
+      <SectionDivider from="#ffffff" to="#ffffff" />
       
       <section className="confirm">
         <div ref={eventCardRef} className={`event-card ${eventInView ? 'animate-in' : ''}`}>

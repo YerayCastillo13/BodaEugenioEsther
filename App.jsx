@@ -526,7 +526,7 @@ function Invitation() {
         <div className="footer-brand">
           <p className="footer-names">Eugenio<span className="amp">&amp;</span>Esther</p>
           <div className="footer-rule"></div>
-          <p className="footer-sub">Nuestra Boda</p>
+          <p className="footer-sub">03 de Julio de 2027</p>
         </div>
         <ul className="footer-links">
           <li><a href="#" onClick={(e) => { e.preventDefault(); setModal("confirm"); }}>Confirmar asistencia</a></li>

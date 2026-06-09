@@ -276,21 +276,25 @@ function Invitation() {
   };
 
   // Reproducir/pausar música
-  // useEffect(() => {
-  //   if (!audioRef.current) return;
+  useEffect(() => {
+
+
+    debugger;
+
+    if (!audioRef.current) return;
     
-  //   if (musicOn) {
-  //     audioRef.current.play().catch(err => {
-  //       console.log("Error reproduciendo:", err);
-  //       showToast("No se pudo reproducir la música");
-  //       setMusicOn(false);
-  //     });
-  //     showToast("🎵 Música activada");
-  //   } else {
-  //     audioRef.current.pause();
-  //     showToast("⏸️ Música pausada");
-  //   }
-  // }, [musicOn]);
+    if (musicOn) {
+      audioRef.current.play().catch(err => {
+        console.log("Error reproduciendo:", err);
+        showToast("No se pudo reproducir la música");
+        setMusicOn(false);
+      });
+      showToast("🎵 Música activada");
+    } else {
+      audioRef.current.pause();
+      showToast("⏸️ Música pausada");
+    }
+  }, [musicOn]);
 
   // Intento de autoplay la primera vez que visita la web
   useEffect(() => {

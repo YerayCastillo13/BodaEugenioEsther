@@ -91,7 +91,6 @@
     box-shadow: 0 20px 60px rgba(60, 45, 20, 0.18), 0 4px 12px rgba(60, 45, 20, 0.08);
     overflow: hidden;
     position: relative;
-     z-index: 2;
   }
 
   /* ====== Section base ====== */
@@ -135,15 +134,14 @@
     padding: 20px 36px 0px;
     text-align: center;
     position: relative;
-  overflow: hidden;
-  z-index: 1;
-  will-change: transform;
+    overflow: hidden;
   }
   
   .hero-names,
   .hero-date,
   .hero-sub,
-  .quote {
+  .quote,
+  .block {
     opacity: 0;
     animation: heroReveal 1s ease forwards;
   }
@@ -163,7 +161,7 @@
 
   .hero-bg {
     position: absolute !important;
-    inset: 0;
+    inset: -120px 0 0 0;
     z-index: 0;
 
     background-image:
@@ -172,21 +170,11 @@
     url(/images/prueba_HeroBG.jpg);
 
     background-size: cover;
-  background-position: center;
-  transform: scale(1.1);
-  will-change: transform;
-  z-index: 0;
-  }
+    background-position: center center;
+    background-repeat: no-repeat;
 
-  section.block,
-  .events,
-  .gallery-wrap,
-  .fiesta-intro,
-  .gifts,
-  .ig {
-    position: relative;
-    z-index: 2;
-    background: rgba(255,255,255,0.92);
+    will-change: transform;
+    pointer-events: none;
   }
 
   /* subtle paper grain via SVG noise */

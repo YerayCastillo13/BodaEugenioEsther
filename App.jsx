@@ -275,7 +275,20 @@ function Invitation() {
     setTimeout(() => setToast(""), 2400);
   };
 
-  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const bg = document.querySelector(".hero-bg");
+
+    const handleScroll = () => {
+      if (!bg) return;
+
+      bg.style.transform =
+        `scale(1.15) translateY(${window.scrollY * 0.25}px)`;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Reproducir/pausar música
   useEffect(() => {
@@ -383,7 +396,7 @@ function Invitation() {
           <span className="quote-mark bottom">&rdquo;</span>
         </div>
 
-      <div ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ margintop: 10, paddingTop: 0, paddingBottom: 0 }}>
+      <div ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ marginTop: 10, paddingTop: 0, paddingBottom: 0 }}>
         <h2 className="countdown-title">Faltan...</h2>
         <div className="counters">
           {[

@@ -455,7 +455,7 @@ function Invitation() {
 
       <SectionDivider from="#ffffff" to="#ffffff" />
       
-      <section className="confirm">
+      <section className="confirm animate-in">
         <div ref={eventCardRef} className={`event-card ${eventInView ? 'animate-in' : ''}`}>
           <div className="event-icon"><RingsIcon /></div>
           <h3>Ceremonia<br/>&<br/>Celebración</h3>

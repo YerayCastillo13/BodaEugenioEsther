@@ -565,12 +565,51 @@ function Invitation() {
           Habrá un servicio de autobús desde la <strong>Plaza Catalunya</strong> a las 16:00h hacia la parroquia, y otro al finalizar la celebración de regreso al centro de Barcelona.
         </p>
       </SimpleModal>
-      <SimpleModal open={modal === "alojamientos"} onClose={() => setModal(null)} title="Alojamientos" icon={<HotelIcon />}>
-        <p style={{ fontFamily: "Quattrocento", fontSize: 13, color: "var(--ink)", lineHeight: 1.6 }}>
-          Hemos localizado los mejores alojamientos cercanos:<br /><br />
-          <strong><a href="https://hotelroute42.com-hotel.com/es/" target="_blank" rel="noopener noreferrer">Hotel Alda Route 42</a></strong> · 15 min a pie<br />
-          <strong><a href="https://complejoparis.com/" target="_blank" rel="noopener noreferrer">Complejo París</a></strong> · 10 min en coche<br /><br />
-          {/* Mencionad el código <em>"manuelylaura"</em> al reservar. */}
+      <SimpleModal
+        open={modal === "alojamientos"}
+        onClose={() => setModal(null)}
+        title="Alojamientos"
+        icon={<HotelIcon />}
+      >
+        <p
+          style={{
+            fontFamily: "Quattrocento",
+            fontSize: 13,
+            color: "var(--ink)",
+            lineHeight: 1.8,
+          }}
+        >
+          Hemos localizado los mejores alojamientos cercanos:
+          <br />
+          <br />
+
+          <strong>
+            <a
+              className="modal-link"
+              href="https://hotelroute42.com-hotel.com/es/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Hotel Alda Route 42
+            </a>
+          </strong>
+          {" · "}15 min a pie
+          <br />
+
+          <strong>
+            <a
+              className="modal-link"
+              href="https://complejoparis.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Complejo París
+            </a>
+          </strong>
+          {" · "}10 min en coche
+
+          <br />
+          <br />
         </p>
       </SimpleModal>
       <SimpleModal open={modal === "regalos"} onClose={() => setModal(null)} title="Regalos" icon={<GiftIcon />}>

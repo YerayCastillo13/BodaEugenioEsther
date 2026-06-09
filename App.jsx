@@ -281,76 +281,113 @@ function Invitation() {
     setTimeout(() => setToast(""), 2400);
   };
 
+  // useEffect(() => {
+  //   const bg = document.querySelector(".hero-bg");
+  //   if (!bg) return;
+
+  //   let targetY = 0;
+  //   let currentY = 0;
+
+  //   const onScroll = () => {
+  //     targetY = window.scrollY;
+  //   };
+
+  //   const animate = () => {
+  //     // suavizado tipo “cámara pesada”
+  //     currentY += (targetY - currentY) * 0.06;
+
+  //     // LIMITAMOS efecto SOLO al inicio (clave para el “wow”)
+  //     const limit = 500;
+  //     const progress = Math.min(currentY / limit, 1);
+
+  //     // easing cinematográfico (lento al principio)
+  //     const ease = 1 - Math.pow(1 - progress, 3);
+
+  //     // PARALLAX más suave cuanto más scroll
+  //     const factor = 0.15 + (0.2 * (1 - ease));
+
+  //     const y = currentY * factor;
+
+  //     bg.style.transform = `translate3d(0, ${y}px, 0)`;
+
+  //     requestAnimationFrame(animate);
+  //   };
+
+  //   window.addEventListener("scroll", onScroll, { passive: true });
+  //   animate();
+
+  //   return () => window.removeEventListener("scroll", onScroll);
+  // }, []);
+
+  // useEffect(() => {
+  //   const els = [
+  //     { ref: heroDateRef, speed: 0.03 },
+  //     { ref: heroNamesRef, speed: 0.05 },
+  //     { ref: heroSubRef, speed: 0.02 },
+  //     { ref: heroQuoteRef, speed: 0.01 },
+  //   ];
+
+  //   let target = 0;
+  //   let current = 0;
+
+  //   const onScroll = () => {
+  //     target = window.scrollY;
+  //   };
+
+  //   const animate = () => {
+  //     current += (target - current) * 0.06;
+
+  //     els.forEach(({ ref, speed }) => {
+  //       if (!ref.current) return;
+
+  //       ref.current.style.transform =
+  //         `translate3d(0, ${current * speed}px, 0)`;
+  //     });
+
+  //     requestAnimationFrame(animate);
+  //   };
+
+  //   window.addEventListener("scroll", onScroll, { passive: true });
+  //   animate();
+
+  //   return () => window.removeEventListener("scroll", onScroll);
+  // }, []);
+
   useEffect(() => {
+    const hero = document.querySelector(".hero");
     const bg = document.querySelector(".hero-bg");
-    if (!bg) return;
 
-    let targetY = 0;
-    let currentY = 0;
+    if (!hero || !bg) return;
 
-    const onScroll = () => {
-      targetY = window.scrollY;
-    };
+    let raf = null;
 
-    const animate = () => {
-      // suavizado tipo “cámara pesada”
-      currentY += (targetY - currentY) * 0.06;
+    const update = () => {
+      const rect = hero.getBoundingClientRect();
 
-      // LIMITAMOS efecto SOLO al inicio (clave para el “wow”)
-      const limit = 500;
-      const progress = Math.min(currentY / limit, 1);
+      // progreso del hero en viewport (0 -> entra, 1 -> sale)
+      const progress = Math.min(
+        Math.max(-rect.top / rect.height, 0),
+        1
+      );
 
-      // easing cinematográfico (lento al principio)
+      // easing tipo Apple
       const ease = 1 - Math.pow(1 - progress, 3);
 
-      // PARALLAX más suave cuanto más scroll
-      const factor = 0.15 + (0.2 * (1 - ease));
+      // PARALLAX fondo
+      const bgY = ease * 80; // intensidad fondo
 
-      const y = currentY * factor;
+      // “se queda detrás del blanco”
+      const heroY = ease * -40;
 
-      bg.style.transform = `translate3d(0, ${y}px, 0)`;
+      bg.style.transform = `translate3d(0, ${bgY}px, 0) scale(1.1)`;
+      hero.style.transform = `translate3d(0, ${heroY}px, 0)`;
 
-      requestAnimationFrame(animate);
+      raf = requestAnimationFrame(update);
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    animate();
+    update();
 
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const els = [
-      { ref: heroDateRef, speed: 0.03 },
-      { ref: heroNamesRef, speed: 0.05 },
-      { ref: heroSubRef, speed: 0.02 },
-      { ref: heroQuoteRef, speed: 0.01 },
-    ];
-
-    let target = 0;
-    let current = 0;
-
-    const onScroll = () => {
-      target = window.scrollY;
-    };
-
-    const animate = () => {
-      current += (target - current) * 0.06;
-
-      els.forEach(({ ref, speed }) => {
-        if (!ref.current) return;
-
-        ref.current.style.transform =
-          `translate3d(0, ${current * speed}px, 0)`;
-      });
-
-      requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    animate();
-
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   // Reproducir/pausar música

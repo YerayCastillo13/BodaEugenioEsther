@@ -133,8 +133,11 @@
       var(--paper);
     padding: 20px 36px 0px;
     text-align: center;
-    position: relative;
+    position: sticky;
+    top: 0;
+    height: 100vh;
     overflow: hidden;
+    z-index: 0;
   }
   
   .hero-names,
@@ -160,7 +163,7 @@
 
   .hero-bg {
     position: absolute !important;
-    inset: -120px 0 0 0;
+    inset: 0;
     z-index: 0;
 
     background-image:
@@ -174,6 +177,18 @@
 
     will-change: transform;
     pointer-events: none;
+    transform: translateY(0);
+  }
+
+  section.block,
+  .events,
+  .gallery-wrap,
+  .fiesta-intro,
+  .gifts,
+  .ig {
+    position: relative;
+    z-index: 2;
+    background: rgba(255,255,255,0.92);
   }
 
   /* subtle paper grain via SVG noise */

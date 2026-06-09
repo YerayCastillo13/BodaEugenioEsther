@@ -251,6 +251,12 @@ function Invitation() {
   const [toast, setToast] = useState("");
   const [lightbox, setLightbox] = useState(null);
   
+  //Ref hero para cada elemento que tendrá efecto parallax individual
+  const heroNamesRef = useRef(null);
+  const heroDateRef = useRef(null);
+  const heroSubRef = useRef(null);
+  const heroQuoteRef = useRef(null);
+
   // Referencia para el audio
   const audioRef = useRef(null);
 
@@ -314,26 +320,28 @@ function Invitation() {
   }, []);
 
   useEffect(() => {
-    const textEls = document.querySelectorAll(
-      ".hero-names, .hero-date, .hero-sub, .quote, .hero-top-ornament"
-    );
+    const els = [
+      { ref: heroDateRef, speed: 0.03 },
+      { ref: heroNamesRef, speed: 0.05 },
+      { ref: heroSubRef, speed: 0.02 },
+      { ref: heroQuoteRef, speed: 0.01 },
+    ];
 
-    let targetY = 0;
-    let currentY = 0;
+    let target = 0;
+    let current = 0;
 
     const onScroll = () => {
-      targetY = window.scrollY;
+      target = window.scrollY;
     };
 
     const animate = () => {
-      currentY += (targetY - currentY) * 0.06;
+      current += (target - current) * 0.06;
 
-      // MUY IMPORTANTE: efecto pequeño (no compite con el fondo)
-      const move = currentY * 0.05;
+      els.forEach(({ ref, speed }) => {
+        if (!ref.current) return;
 
-      textEls.forEach((el, i) => {
-        const depth = (i + 1) * 0.3; // capas distintas
-        el.style.transform = `translate3d(0, ${move * depth}px, 0)`;
+        ref.current.style.transform =
+          `translate3d(0, ${current * speed}px, 0)`;
       });
 
       requestAnimationFrame(animate);
@@ -416,19 +424,19 @@ function Invitation() {
 
         <BotanicalTop className="hero-top-ornament" />
 
-        <div className="hero-date">
+        <div ref={heroDateRef} className="hero-date">
           <DateFlourish flip />
           <span>03.07.2027</span>
           <DateFlourish />
         </div>
 
-        <h1 className="hero-names">
+        <h1 className="hero-names" ref={heroNamesRef}>
           Eugenio<span className="amp">&amp;</span>Esther
         </h1>
         <div className="hero-rule"></div>
         <p className="hero-sub">Nuestra invitación a la Boda</p>
 
-        <div className="quote">
+        <div ref={heroQuoteRef} className="quote">
           <span className="quote-mark top">&ldquo;</span>
           Todos somos mortales,<br />
           hasta el primer beso<br />

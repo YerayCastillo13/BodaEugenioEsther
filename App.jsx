@@ -403,7 +403,7 @@ function Invitation() {
       </div>
 
       {/* Confirmación de asistencia */}
-      <div className="confirm">
+      <section className="confirm">
         <div ref={eventCardRef} className={`event-card ${eventInView ? 'animate-in' : ''}`}>
           <div className="event-icon"><RingsIcon /></div>
           <h3>Ceremonia<br/>&<br/>Celebración</h3>
@@ -415,7 +415,7 @@ function Invitation() {
           <p className="event-detail">Vara Restaurante & Eventos<br />A-42, Km 31, 45200<br />Illescas<br />Toledo</p>
           <button className="btn-pill" onClick={() => setModal("map1")}>¿Cómo llegar?</button>
         </div>
-      </div>
+      </section>
 
       </section>
 
@@ -455,6 +455,8 @@ function Invitation() {
           <button className="btn-pill" onClick={() => setModal("map2")}>¿Cómo llegar?</button>
         </div>
       </div> */}
+      
+            
 
       <SectionDivider from="#ffffff" to="#ffffff" />
 
@@ -465,7 +467,7 @@ function Invitation() {
         <button className="btn-pill lg" onClick={() => setModal("confirm")}>Confirmar asistencia</button> */}
 
 
-      <div className="event-card-soft">
+      <div className="event-card">
           <h3>Confirmación de asistencia</h3>
           <AdornoSmall className="event-divider" />
           <p className="event-detail">Es importante que confirmes tu asistencia</p>

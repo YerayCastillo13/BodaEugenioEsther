@@ -147,9 +147,11 @@
   .hero > * { position: relative; z-index: 1; }
 
   .music-toggle {
-    position: absolute;
-    top: 18px; right: 18px;
-    width: 38px; height: 38px;
+    position: fixed;
+    top: 18px; 
+    right: 18px;
+    width: 38px; 
+    height: 38px;
     border-radius: 50%;
     background: rgba(74, 70, 65, 0.55);
     border: none;
@@ -160,7 +162,7 @@
     transition: background 0.2s ease;
   }
   .music-toggle:hover { background: rgba(74, 70, 65, 0.78); }
-  .music-toggle svg { width: 16px; height: 16px; }
+  .music-toggle svg { width: 26px; height: 26px; }
   .music-toggle.playing { background: var(--gold); }
 
   .hero-top-ornament {

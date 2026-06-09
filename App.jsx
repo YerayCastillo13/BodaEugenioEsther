@@ -383,7 +383,7 @@ function Invitation() {
           <span className="quote-mark bottom">&rdquo;</span>
         </div>
 
-      <div ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ paddingTop: 0, paddingBottom: 0 }}>
+      <div ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ margintop: 10, paddingTop: 0, paddingBottom: 0 }}>
         <h2 className="countdown-title">Faltan...</h2>
         <div className="counters">
           {[

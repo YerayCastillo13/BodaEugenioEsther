@@ -469,7 +469,7 @@ function Invitation() {
         </div>
       </section>      
 
-      <SectionDivider from="#ffffff" to="#ffffff" />
+      {/* <SectionDivider from="#ffffff" to="#ffffff" /> */}
 
       {/* ======= CONFIRMAR ASISTENCIA ======= */}
       <section className="confirm animate-in">
@@ -487,7 +487,7 @@ function Invitation() {
 
       </section>
 
-      <SectionDivider from="#ffffff" to="#ffffff" />
+      {/* <SectionDivider from="#ffffff" to="#ffffff" /> */}
 
       {/* ======= GALERÍA ======= */}
       <Gallery ref={galleryRef} inView={galleryInView} photos={photos} onOpen={(i) => setLightbox(i)} />

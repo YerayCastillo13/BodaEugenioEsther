@@ -341,11 +341,7 @@ function Invitation() {
   return (
     <div className="invite">
       {/* ======= HERO ======= */}
-      <section className="hero" style={{
-    backgroundImage: "url('/public/images/prueba_HeroBG.jpg')",
-    backgroundSize: "cover",
-    backgroundPosition: "center"
-  }}>
+      <section className="hero">
 
         <div
             className="hero-bg"

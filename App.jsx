@@ -483,7 +483,7 @@ function Invitation() {
 
       {/* ======= FIESTA ======= */}
       <section ref={fiestaRef} className={`fiesta-intro ${fiestaInView ? 'animate-in' : ''}`}>
-        <h2 className="section-title">Fiesta</h2>
+        <h2 className="section-title">Toma nota...</h2>
         <p className="lead">Hagamos juntos una fiesta única. Os dejamos algunos detalles a tener en cuenta.</p>
       </section>
 
@@ -554,7 +554,7 @@ function Invitation() {
       </SimpleModal>
       <SimpleModal open={modal === "tips"} onClose={() => setModal(null)} title="Tips y Notas" icon={<ClipboardIcon />}>
         <ul style={{ textAlign: "left", fontFamily: "Quattrocento", fontSize: 13, color: "var(--ink)", lineHeight: 1.7, paddingLeft: 18 }}>
-          <li>La ceremonia comenzará puntual a las 17h.</li>
+          <li>La ceremonia comenzará a las 19h.</li>
           <li>Habrá servicio de guardarropa en la entrada.</li>
           <li>El evento es exclusivo para adultos.</li>
           <li>Se solicita evitar el uso del teléfono durante la ceremonia.</li>
@@ -568,8 +568,8 @@ function Invitation() {
       <SimpleModal open={modal === "alojamientos"} onClose={() => setModal(null)} title="Alojamientos" icon={<HotelIcon />}>
         <p style={{ fontFamily: "Quattrocento", fontSize: 13, color: "var(--ink)", lineHeight: 1.6 }}>
           Hemos localizado los mejores alojamientos cercanos:<br /><br />
-          <strong>Hotel Alda Route 42</strong> · 15 min a pie<br />
-          <strong>Complejo París</strong> · 10 min en coche<br /><br />
+          <strong><a href="https://hotelroute42.com-hotel.com/es/" target="_blank" rel="noopener noreferrer">Hotel Alda Route 42</a></strong> · 15 min a pie<br />
+          <strong><a href="https://complejoparis.com/" target="_blank" rel="noopener noreferrer">Complejo París</a></strong> · 10 min en coche<br /><br />
           {/* Mencionad el código <em>"manuelylaura"</em> al reservar. */}
         </p>
       </SimpleModal>
@@ -788,6 +788,7 @@ function MapModal({ open, onClose, place, address }) {
             <circle cx="200" cy="90" r="4" fill="#fff" />
           </svg>
         </div>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
       <button className="btn-pill" onClick={() => { onClose(); }}>Ampliar mapa</button>
     </SimpleModal>

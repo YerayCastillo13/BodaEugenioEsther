@@ -282,41 +282,37 @@ function Invitation() {
   };
 
   useEffect(() => {
+    const hero = document.querySelector(".hero");
     const bg = document.querySelector(".hero-bg");
-    if (!bg) return;
 
-    let targetY = 0;
-    let currentY = 0;
+    if (!hero || !bg) return;
 
-    const onScroll = () => {
-      targetY = window.scrollY;
+    let current = 0;
+    let target = 0;
+    let rafId;
+
+    const lerp = (start, end, t) => start + (end - start) * t;
+
+    const update = () => {
+      const rect = hero.getBoundingClientRect();
+
+      // progreso del hero en viewport
+      const progress = 1 - rect.bottom / (window.innerHeight + rect.height);
+
+      // intensidad del parallax
+      target = progress * 80; // px de desplazamiento máximo
+
+      // easing (suavizado estilo Apple)
+      current = lerp(current, target, 0.08);
+
+      bg.style.transform = `translate3d(0, ${current}px, 0)`;
+
+      rafId = requestAnimationFrame(update);
     };
 
-    const animate = () => {
-      // suavizado tipo “cámara pesada”
-      currentY += (targetY - currentY) * 0.06;
+    rafId = requestAnimationFrame(update);
 
-      // LIMITAMOS efecto SOLO al inicio (clave para el “wow”)
-      const limit = 500;
-      const progress = Math.min(currentY / limit, 1);
-
-      // easing cinematográfico (lento al principio)
-      const ease = 1 - Math.pow(1 - progress, 3);
-
-      // PARALLAX más suave cuanto más scroll
-      const factor = 0.15 + (0.2 * (1 - ease));
-
-      const y = currentY * factor;
-
-      bg.style.transform = `translate3d(0, ${y}px, 0)`;
-
-      requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    animate();
-
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
   useEffect(() => {

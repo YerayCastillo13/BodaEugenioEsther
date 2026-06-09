@@ -275,7 +275,6 @@ function Invitation() {
     setTimeout(() => setToast(""), 2400);
   };
 
-  const heroRef = useRef(null);
   const [scrollY, setScrollY] = useState(0);
 
   // Reproducir/pausar música
@@ -339,17 +338,18 @@ function Invitation() {
     };
   }, []);
 
-  useEffect(() => {
-    document.documentElement.style.setProperty(
-      "--parallax-offset",
-      `${scrollY * 0.15}px`
-    );
-  }, [scrollY]);
-
   return (
     <div className="invite">
       {/* ======= HERO ======= */}
-      <section ref={heroRef} className="hero">
+      <section className="hero">
+
+        <div
+            className="hero-bg"
+            style={{
+              transform: `scale(1.15) translateY(${scrollY * 0.25}px)`
+            }}
+          />
+
         <audio 
           ref={audioRef}
           src="/musica/dtmf.mp3"
@@ -361,42 +361,21 @@ function Invitation() {
           <MusicCircle />
         </button>
 
-        <div
-          style={{
-            transform: `translateY(${scrollY * 0.25}px)`,
-            transition: "transform 0.05s linear"
-          }}
-        >
-          <BotanicalTop className="hero-top-ornament" />
-        </div>
-        <div
-          className="hero-date"
-          style={{
-            transform: `translateY(${scrollY * 0.35}px)`
-          }}
-        >
+        <BotanicalTop className="hero-top-ornament" />
+
+        <div className="hero-date">
           <DateFlourish flip />
           <span>03.07.2027</span>
           <DateFlourish />
         </div>
 
-        <h1
-          className="hero-names"
-          style={{
-            transform: `translateY(${scrollY * 0.5}px)`
-          }}
-        >
+        <h1 className="hero-names">
           Eugenio<span className="amp">&amp;</span>Esther
         </h1>
         <div className="hero-rule"></div>
         <p className="hero-sub">Nuestra invitación a la Boda</p>
 
-        <div
-          className="quote"
-          style={{
-            transform: `translateY(${scrollY * 0.7}px)`
-          }}
-        >
+        <div className="quote">
           <span className="quote-mark top">&ldquo;</span>
           Todos somos mortales,<br />
           hasta el primer beso<br />

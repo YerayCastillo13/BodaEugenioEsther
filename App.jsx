@@ -277,17 +277,40 @@ function Invitation() {
 
   useEffect(() => {
     const bg = document.querySelector(".hero-bg");
+    if (!bg) return;
 
-    const handleScroll = () => {
-      if (!bg) return;
+    let targetY = 0;
+    let currentY = 0;
 
-      bg.style.transform =
-        `scale(1.15) translateY(${window.scrollY * 0.25}px)`;
+    const onScroll = () => {
+      targetY = window.scrollY;
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const animate = () => {
+      // suavizado tipo “cámara pesada”
+      currentY += (targetY - currentY) * 0.06;
 
-    return () => window.removeEventListener("scroll", handleScroll);
+      // LIMITAMOS efecto SOLO al inicio (clave para el “wow”)
+      const limit = 500;
+      const progress = Math.min(currentY / limit, 1);
+
+      // easing cinematográfico (lento al principio)
+      const ease = 1 - Math.pow(1 - progress, 3);
+
+      // PARALLAX más suave cuanto más scroll
+      const factor = 0.15 + (0.2 * (1 - ease));
+
+      const y = currentY * factor;
+
+      bg.style.transform = `translate3d(0, ${y}px, 0)`;
+
+      requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    animate();
+
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Reproducir/pausar música
@@ -346,9 +369,6 @@ function Invitation() {
 
         <div
             className="hero-bg"
-            style={{
-              transform: `scale(1.15) translateY(${scrollY * 0.25}px)`
-            }}
           />
 
         <audio 

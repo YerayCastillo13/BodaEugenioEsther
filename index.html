@@ -91,6 +91,7 @@
     box-shadow: 0 20px 60px rgba(60, 45, 20, 0.18), 0 4px 12px rgba(60, 45, 20, 0.08);
     overflow: hidden;
     position: relative;
+     z-index: 2;
   }
 
   /* ====== Section base ====== */
@@ -133,11 +134,10 @@
       var(--paper);
     padding: 20px 36px 0px;
     text-align: center;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow: hidden;
-    z-index: 0;
+    position: relative;
+  overflow: hidden;
+  z-index: 1;
+  will-change: transform;
   }
   
   .hero-names,
@@ -172,12 +172,10 @@
     url(/images/prueba_HeroBG.jpg);
 
     background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-
-    will-change: transform;
-    pointer-events: none;
-    transform: translateY(0);
+  background-position: center;
+  transform: scale(1.1);
+  will-change: transform;
+  z-index: 0;
   }
 
   section.block,

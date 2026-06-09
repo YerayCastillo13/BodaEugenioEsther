@@ -234,9 +234,6 @@ function useCountdown(target) {
 
 // ------- The page -------
 function Invitation() {
-
-  const [scrollY, setScrollY] = useState(0);
-
   // Set the date a couple months out for a live countdown
   const targetDate = useMemo(() => {
     const d = new Date();
@@ -279,8 +276,13 @@ function Invitation() {
   };
 
   useEffect(() => {
+    const bg = document.querySelector(".hero-bg");
+
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (!bg) return;
+
+      bg.style.transform =
+        `scale(1.15) translateY(${window.scrollY * 0.25}px)`;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -357,7 +359,7 @@ function Invitation() {
         <div
             className="hero-bg"
             style={{
-              transform: `scale(1.25) translateY(${scrollY * 0.06}px)`
+              transform: `scale(1.15) translateY(${scrollY * 0.25}px)`
             }}
           />
 

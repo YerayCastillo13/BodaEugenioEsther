@@ -133,21 +133,15 @@
       var(--paper);
     padding: 20px 36px 0px;
     text-align: center;
+    position: relative;
     overflow: hidden;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
   
   .hero-names,
   .hero-date,
   .hero-sub,
   .quote,
-  .block {  
+  .block {
     opacity: 0;
     transform: translateY(20px);
     animation: heroReveal 1s ease forwards;
@@ -956,13 +950,6 @@
     /* Hero section */
     .hero {
       padding: 16px 16px 0px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
     .hero-top-ornament {
       margin: 4px auto 60px;

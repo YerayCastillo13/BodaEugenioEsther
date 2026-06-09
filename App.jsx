@@ -465,7 +465,7 @@ function Invitation() {
         <button className="btn-pill lg" onClick={() => setModal("confirm")}>Confirmar asistencia</button> */}
 
 
-      <div className="event-card">
+      <div className="event-card-soft">
           <h3>Confirmación de asistencia</h3>
           <AdornoSmall className="event-divider" />
           <p className="event-detail">Es importante que confirmes tu asistencia</p>

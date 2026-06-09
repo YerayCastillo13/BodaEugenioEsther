@@ -357,7 +357,7 @@ function Invitation() {
         <div
             className="hero-bg"
             style={{
-              transform: `scale(1.2) translateY(${scrollY * 0.12}px)`
+              transform: `scale(1.25) translateY(${scrollY * 0.06}px)`
             }}
           />
 

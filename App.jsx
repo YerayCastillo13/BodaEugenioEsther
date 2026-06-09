@@ -383,6 +383,7 @@ function Invitation() {
           <span className="quote-mark bottom">&rdquo;</span>
         </div>
 
+      {/* Faltan */}
       <div ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ paddingTop: 36, paddingBottom: 48 }}>
         <h2 className="countdown-title">Faltan...</h2>
         <div className="counters">
@@ -401,6 +402,21 @@ function Invitation() {
         <HeartIcon className="heart-pulse" />
       </div>
 
+      {/* Confirmación de asistencia */}
+      <div className="confirm">
+        <div ref={eventCardRef} className={`event-card ${eventInView ? 'animate-in' : ''}`}>
+          <div className="event-icon"><RingsIcon /></div>
+          <h3>Ceremonia<br/>&<br/>Celebración</h3>
+          <AdornoSmall className="event-divider" />
+          <p className="event-sub">Día</p>
+          <p className="event-detail">Sábado 03 de Julio&nbsp;-&nbsp;19:00h</p>
+          <button className="btn-pill" onClick={() => setModal("agenda1")}>Agendar</button>
+          <p className="event-sub">Lugar</p>
+          <p className="event-detail">Vara Restaurante & Eventos<br />A-42, Km 31, 45200<br />Illescas<br />Toledo</p>
+          <button className="btn-pill" onClick={() => setModal("map1")}>¿Cómo llegar?</button>
+        </div>
+      </div>
+
       </section>
 
       {/* <SectionDivider from="#faf5ec" to="#ffffff" /> */}
@@ -408,7 +424,7 @@ function Invitation() {
       {/* ======= COUNTDOWN ======= */}
       
 
-      <SectionDivider from="#ffffff" to="#ffffff" />
+      {/* <SectionDivider from="#ffffff" to="#ffffff" /> */}
 
       {/* ======= INVITADOS ======= */}
       {/*<section className="block" style={{ paddingTop: 24 }}>
@@ -439,20 +455,6 @@ function Invitation() {
           <button className="btn-pill" onClick={() => setModal("map2")}>¿Cómo llegar?</button>
         </div>
       </div> */}
-      
-      <section className="confirm">
-        <div ref={eventCardRef} className={`event-card ${eventInView ? 'animate-in' : ''}`}>
-          <div className="event-icon"><RingsIcon /></div>
-          <h3>Ceremonia<br/>&<br/>Celebración</h3>
-          <AdornoSmall className="event-divider" />
-          <p className="event-sub">Día</p>
-          <p className="event-detail">Sábado 03 de Julio&nbsp;-&nbsp;19:00h</p>
-          <button className="btn-pill" onClick={() => setModal("agenda1")}>Agendar</button>
-          <p className="event-sub">Lugar</p>
-          <p className="event-detail">Vara Restaurante & Eventos<br />A-42, Km 31, 45200<br />Illescas<br />Toledo</p>
-          <button className="btn-pill" onClick={() => setModal("map1")}>¿Cómo llegar?</button>
-        </div>
-      </section>      
 
       <SectionDivider from="#ffffff" to="#ffffff" />
 

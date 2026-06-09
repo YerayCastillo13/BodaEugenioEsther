@@ -92,29 +92,6 @@
     position: relative;
   }
 
-  .block,
-  .event-card,
-  .gallery-wrap,
-  .fiesta-intro,
-  .fiesta-card,
-  .gifts,
-  .ig {
-    opacity: 0;
-    transform: translateY(60px) scale(0.98);
-    filter: blur(8px);
-
-    transition:
-      opacity 1s cubic-bezier(.16,1,.3,1),
-      transform 1s cubic-bezier(.16,1,.3,1),
-      filter 1s cubic-bezier(.16,1,.3,1);
-  }
-
-  .animate-in {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-
   /* ====== Section base ====== */
   section.block {
     position: relative;
@@ -158,7 +135,7 @@
     position: relative;
     overflow: hidden;
   }
-
+  
   .hero-bg {
     position: absolute !important;
     inset: -120px 0 0 0;

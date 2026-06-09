@@ -382,12 +382,8 @@ function Invitation() {
           y la segunda copa de vino
           <span className="quote-mark bottom">&rdquo;</span>
         </div>
-      </section>
 
-      {/* <SectionDivider from="#faf5ec" to="#ffffff" /> */}
-
-      {/* ======= COUNTDOWN ======= */}
-      <section ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ paddingTop: 36, paddingBottom: 48 }}>
+<section ref={countdownRef} className={`block ${countdownInView ? 'animate-in' : ''}`} style={{ paddingTop: 36, paddingBottom: 48 }}>
         <h2 className="countdown-title">Faltan</h2>
         <div className="counters">
           {[
@@ -404,6 +400,13 @@ function Invitation() {
         </div>
         <HeartIcon className="heart-pulse" />
       </section>
+
+      </section>
+
+      {/* <SectionDivider from="#faf5ec" to="#ffffff" /> */}
+
+      {/* ======= COUNTDOWN ======= */}
+      
 
       <SectionDivider from="#ffffff" to="#ffffff" />
 

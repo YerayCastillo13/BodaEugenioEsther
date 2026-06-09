@@ -516,7 +516,7 @@ function Invitation() {
         <h2 className="section-title">Compartimos este día junto a ti</h2>
         <p className="lead">Comparte tus fotos y vídeos de este hermoso día</p>
         <div className="ig-icon"><InstagramIcon /></div>
-        <a className="hashtag" href="#" onClick={(e) => { e.preventDefault(); showToast("Abriendo Instagram…"); }}>#eugenio&esther</a>
+        <a className="hashtag" href="#" onClick={() => window.open("https://www.instagram.com/explore/tags/eugenio&esther/", "_blank")}>#eugenio&esther</a>
         <div><button className="btn-pill" onClick={() => window.open("https://www.instagram.com/explore/tags/eugenio&esther/", "_blank")}>Ver en Instagram</button></div>
       </section>
 

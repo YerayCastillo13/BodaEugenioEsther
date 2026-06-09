@@ -137,6 +137,29 @@
     overflow: hidden;
   }
   
+  .hero-names,
+  .hero-date,
+  .hero-sub,
+  .quote,
+  .block {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroReveal 1s ease forwards;
+  }
+
+  .hero-date { animation-delay: .2s; }
+  .hero-names { animation-delay: .4s; }
+  .hero-sub { animation-delay: .6s; }
+  .quote { animation-delay: .8s; }
+  .block { animation-delay: 1s; }
+
+  @keyframes heroReveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .hero-bg {
     position: absolute !important;
     inset: -120px 0 0 0;

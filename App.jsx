@@ -765,32 +765,34 @@ function MapModal({ open, onClose, place, address }) {
       </svg>
     }>
       <p style={{ fontFamily: "Karla, sans-serif", fontSize: 12, color: "var(--ink-soft)", margin: "0 0 14px" }}>{address}</p>
-      <div style={{
-        height: 180, background: "#e8e3d6 url('https://maps.googleapis.com/maps/api/staticmap?size=400x180&zoom=14&style=feature:all|saturation:-40') center/cover",
-        borderRadius: 4, position: "relative", overflow: "hidden", marginBottom: 16,
-      }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #ece6d5 0%, #d8d0bd 100%)" }}>
-          <svg viewBox="0 0 400 180" style={{ width: "100%", height: "100%" }}>
-            <g stroke="#c8bea3" fill="none" strokeWidth="1.4">
-              <path d="M0 80 L 400 100" />
-              <path d="M0 140 L 400 150" />
-              <path d="M120 0 L 130 180" />
-              <path d="M250 0 L 240 180" />
-              <path d="M40 30 L 360 50" opacity="0.5" />
-            </g>
-            <g fill="#dcd3bc" stroke="#c8bea3">
-              <rect x="20" y="20" width="40" height="30" />
-              <rect x="200" y="110" width="50" height="40" />
-              <rect x="310" y="30" width="50" height="30" />
-              <rect x="60" y="130" width="40" height="30" />
-            </g>
-            <circle cx="200" cy="90" r="10" fill="#d5b15e" />
-            <circle cx="200" cy="90" r="4" fill="#fff" />
-          </svg>
+        <div
+          style={{
+            height: 300,
+            borderRadius: 8,
+            overflow: "hidden",
+            marginBottom: 16,
+          }}
+        >
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Mapa Vara Restaurante & Eventos"
+          />
         </div>
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      </div>
-      <button className="btn-pill" onClick={() => { onClose(); }}>Ampliar mapa</button>
+      <button
+        className="btn-pill"
+        onClick={() => {
+          window.open(
+            "https://maps.google.com/?q=Vara+Restaurante+Eventos+Illescas",
+            "_blank"
+          );
+        }}
+      >Ampliar mapa</button>
     </SimpleModal>
   );
 }

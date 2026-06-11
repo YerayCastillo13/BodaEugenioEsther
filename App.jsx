@@ -263,6 +263,7 @@ function Invitation() {
   // Refs para las secciones que se animarán
   const countdownRef = useRef(null);
   const eventCardRef = useRef(null);
+  const confirmRef = useRef(null);
   const galleryRef = useRef(null);
   const fiestaRef = useRef(null);
   const giftsRef = useRef(null);
@@ -271,6 +272,7 @@ function Invitation() {
   // Detectar cuando cada sección entra en viewport
   const countdownInView = useInView(countdownRef);
   const eventInView = useInView(eventCardRef);
+  const confirmInView = useInView(confirmRef);
   const galleryInView = useInView(galleryRef);
   const fiestaInView = useInView(fiestaRef);
   const giftsInView = useInView(giftsRef);
@@ -503,7 +505,7 @@ function Invitation() {
 
       <SectionDivider from="#ffffff" to="#ffffff" />
       
-      <section className="confirm animate-in">
+      <section className="confirm">
         <div ref={eventCardRef} className={`event-card ${eventInView ? 'animate-in' : ''}`}>
           <div className="event-icon"><RingsIcon /></div>
           <h3>Ceremonia<br/>&<br/>Celebración</h3>
@@ -520,13 +522,13 @@ function Invitation() {
       {/* <SectionDivider from="#ffffff" to="#ffffff" /> */}
 
       {/* ======= CONFIRMAR ASISTENCIA ======= */}
-      <section className="confirm animate-in">
+      <section className="confirm">
         {/* <h2 className="section-title">Confirmación de asistencia</h2>
         <p className="lead event-detail">Es importante que confirmes tu asistencia</p>
         <button className="btn-pill lg" onClick={() => setModal("confirm")}>Confirmar asistencia</button> */}
 
 
-      <div className="event-card">
+      <div ref={confirmRef} className={`event-card ${confirmInView ? 'animate-in' : ''}`}>
           <h3>Confirmación de asistencia</h3>
           <AdornoSmall className="event-divider" />
           <p className="event-detail">Es importante que confirmes tu asistencia</p>

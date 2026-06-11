@@ -65,8 +65,23 @@
   }
   
   /* Clases que se aplican cuando el elemento entra en viewport */
-  section.animate-in {
+   section.animate-in,
+  .event-card.animate-in,
+  .confirm.animate-in,
+  .gifts.animate-in,
+  .ig.animate-in,
+  .gallery-wrap.animate-in,
+  .fiesta-intro.animate-in {
     animation: slideInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  section,
+  .confirm,
+  .gifts,
+  .ig,
+  .gallery-wrap,
+  .fiesta-intro {
+    opacity: 0;
   }
   
   .event-card.animate-in,
@@ -153,8 +168,7 @@
   .hero-names,
   .hero-date,
   .hero-sub,
-  .quote,
-  .block {
+  .quote {
     opacity: 0;
     animation: heroReveal 1s ease forwards;
   }
@@ -163,7 +177,6 @@
   .hero-names { animation-delay: .4s; }
   .hero-sub { animation-delay: .6s; }
   .quote { animation-delay: .8s; }
-  .block { animation-delay: 1s; }
 
   @keyframes heroReveal {
     to {

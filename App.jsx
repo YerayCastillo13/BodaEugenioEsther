@@ -403,6 +403,33 @@ function Invitation() {
     "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?w=800&auto=format&fit=crop",
   ];
+
+  useEffect(() => {
+    const cards = document.querySelectorAll('.event-card, .fiesta-card');
+    
+    const onScroll = () => {
+      const scrollY = window.scrollY;
+      const windowH = window.innerHeight;
+      
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const centerY = rect.top + rect.height / 2;
+        const distFromCenter = centerY - windowH / 2;
+        const progress = 1 - Math.min(Math.abs(distFromCenter) / (windowH * 0.8), 1);
+        
+        const translateY = (1 - progress) * 12;
+        const shadow = `0 ${4 + progress * 20}px ${12 + progress * 30}px rgba(60, 45, 20, ${0.04 + progress * 0.12})`;
+        
+        card.style.transform = `translateY(${translateY}px)`;
+        card.style.boxShadow = shadow;
+        card.style.transition = 'transform 0.4s ease, box-shadow 0.4s ease';
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
  
   return (
     <div className="invite">

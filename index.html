@@ -88,7 +88,12 @@
   /* outer device-like frame so the page sits centered on a grey backdrop */
   .stage {
     min-height: 100vh;
-    background: linear-gradient(180deg, #e6e1d8 0%, #ddd6c9 100%);
+    background-image:
+      linear-gradient(rgba(246, 241, 233, 0.82), rgba(246, 241, 233, 0.82)),
+      url(/images/prueba_HeroBG.jpg);
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;
     padding: 28px 0;
     display: flex;
     justify-content: center;
@@ -107,7 +112,7 @@
     position: relative;
     padding: 32px 36px 36px;
     text-align: center;
-    background: var(--white);
+    background: transparent;
   }
   section.block.cream { background: var(--paper); }
 
@@ -1158,12 +1163,14 @@
   .gallery-wrap,
   .fiesta-intro,
   .gifts,
-  .ig {
+  .ig,
+  .footer {
     position: relative;
     z-index: 2;
 
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 
     border-radius: 18px;
     margin: 24px 12px;

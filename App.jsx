@@ -417,7 +417,7 @@ function Invitation() {
         const distFromCenter = centerY - windowH / 2;
         const progress = 1 - Math.min(Math.abs(distFromCenter) / (windowH * 0.8), 1);
         
-        const translateY = (1 - progress) * 12;
+        const translateY = (1 - progress) * 10;
         const shadow = `0 ${4 + progress * 20}px ${12 + progress * 30}px rgba(60, 45, 20, ${0.04 + progress * 0.12})`;
         
         card.style.transform = `translateY(${translateY}px)`;

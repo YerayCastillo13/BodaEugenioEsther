@@ -404,15 +404,12 @@ function Invitation() {
  
   return (
     <div className="invite">
-
-<div
-            className="hero-bg"
-          />
-
       {/* ======= HERO ======= */}
       <section className="hero">
 
-        
+        <div
+            className="hero-bg"
+          />
 
         <audio 
           ref={audioRef}

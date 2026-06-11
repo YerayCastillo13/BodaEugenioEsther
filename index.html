@@ -1140,6 +1140,29 @@
     .modal-row { gap: 6px; flex-wrap: wrap; }
   }
 
+  .parallax-section {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .parallax-image {
+    position: absolute;
+    inset: -120px 0;
+    background-image: url("/images/parallax.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    will-change: transform;
+  }
+
+  .parallax-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(250,245,236,.18);
+  }
+
   .confirm,
   .events,
   .gallery-wrap,

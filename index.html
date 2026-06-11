@@ -88,12 +88,7 @@
   /* outer device-like frame so the page sits centered on a grey backdrop */
   .stage {
     min-height: 100vh;
-    background-image:
-      linear-gradient(rgba(246, 241, 233, 0.82), rgba(246, 241, 233, 0.82)),
-      url(/images/prueba_HeroBG.jpg);
-    background-size: cover;
-    background-position: center top;
-    background-attachment: fixed;
+    background: linear-gradient(180deg, #e6e1d8 0%, #ddd6c9 100%);
     padding: 28px 0;
     display: flex;
     justify-content: center;
@@ -105,6 +100,24 @@
     box-shadow: 0 20px 60px rgba(60, 45, 20, 0.18), 0 4px 12px rgba(60, 45, 20, 0.08);
     overflow: hidden;
     position: relative;
+  }
+
+   .invite::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(246, 241, 233, 0.88), rgba(246, 241, 233, 0.88)),
+      url(/images/prueba_HeroBG.jpg);
+    background-size: cover;
+    background-position: center top;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .invite > * {
+    position: relative;
+    z-index: 1;
   }
 
   /* ====== Section base ====== */

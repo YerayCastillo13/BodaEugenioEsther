@@ -320,34 +320,6 @@ function Invitation() {
   }, []);
 
   useEffect(() => {
-    const area = document.querySelector(".main-parallax-area");
-    if (!area) return;
-
-    let target = 0;
-    let current = 0;
-
-    const onScroll = () => {
-      target = window.scrollY;
-    };
-
-    const animate = () => {
-      current += (target - current) * 0.05;
-
-      area.style.setProperty(
-        "--parallax-y",
-        `${current * 0.15}px`
-      );
-
-      requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    animate();
-
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
     const els = [
       { ref: heroDateRef, speed: 0.03 },
       { ref: heroNamesRef, speed: 0.05 },
@@ -494,8 +466,6 @@ function Invitation() {
 
       {/* <SectionDivider from="#faf5ec" to="#ffffff" /> */}
 
-      <div className="main-parallax-area">
-
       {/* ======= COUNTDOWN ======= */}
       
 
@@ -630,7 +600,6 @@ function Invitation() {
           Desarrollado con <span className="heart">♥</span>
         </div>
       </footer>
-      </div>
 
       {/* ======= MODALS ======= */}
       <ConfirmModal open={modal === "confirm"} onClose={() => setModal(null)} onSubmit={() => { setModal(null); window.open("https://wa.me/34685976684?text=" + (document.querySelector('.txtAsistenteAcompanante').value != '' ? "Somos " : "Soy ") + document.querySelector('.txtAsistentePrincipal').value + (document.querySelector('.txtAsistenteAcompanante').value ? " y " + document.querySelector('.txtAsistenteAcompanante').value : "") + " Quiero confirmar mi asistencia a vuestra boda 🥳" + (document.querySelector('.txtAsistenteRestriccionesAlimentarias').value ? " Tengo restricciones alimentarias: " + document.querySelector('.txtAsistenteRestriccionesAlimentarias').value : ""), "_blank"); }} />

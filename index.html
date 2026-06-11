@@ -87,8 +87,7 @@
   .invite {
     width: 440px;
     max-width: calc(100vw - 16px);
-    /* background: var(--white); */
-    background: transparent;
+    background: var(--white);
     box-shadow: 0 20px 60px rgba(60, 45, 20, 0.18), 0 4px 12px rgba(60, 45, 20, 0.08);
     overflow: hidden;
     position: relative;
@@ -843,7 +842,7 @@
     background: #fafafa;
     outline: none;
   }
-  .modal-field:focus { border-color: var(--gold); background: transparent; }
+  .modal-field:focus { border-color: var(--gold); background: #fff; }
   .modal-row {
     display: flex; gap: 10px;
     justify-content: center;
@@ -1155,36 +1154,6 @@
 
     border-radius: 18px;
     margin: 24px 12px;
-  }
-
-  .main-parallax-area {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .main-parallax-area::before {
-    content: "";
-    position: absolute;
-
-    top: -300px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    background-image: url("/images/parallax.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    transform: translateY(var(--parallax-y, 0px));
-    will-change: transform;
-
-    z-index: 0;
-  }
-
-  .main-parallax-area > * {
-    position: relative;
-    z-index: 1;
   }
 </style>
 </head>

@@ -320,33 +320,6 @@ function Invitation() {
   }, []);
 
   useEffect(() => {
-    const bg = document.querySelector(".parallax-image");
-    if (!bg) return;
-
-    let targetY = 0;
-    let currentY = 0;
-
-    const onScroll = () => {
-      targetY = window.scrollY;
-    };
-
-    const animate = () => {
-      currentY += (targetY - currentY) * 0.08;
-
-      const y = currentY * 0.18;
-
-      bg.style.transform = `translate3d(0, ${y}px, 0)`;
-
-      requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    animate();
-
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
     const els = [
       { ref: heroDateRef, speed: 0.03 },
       { ref: heroNamesRef, speed: 0.05 },
@@ -490,11 +463,6 @@ function Invitation() {
       </div>
 
       </section>
-
-      <section className="parallax-section">
-      <div className="parallax-image"></div>
-      <div className="parallax-overlay"></div>
-    </section>
 
       {/* <SectionDivider from="#faf5ec" to="#ffffff" /> */}
 

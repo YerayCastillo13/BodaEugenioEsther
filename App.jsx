@@ -397,11 +397,9 @@ function Invitation() {
   };
 
   const photos = [
-    "/images/parallax.jpg",
-    "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?w=800&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?w=800&auto=format&fit=crop",
+    "/images/Foto1.jpg",
+    "/images/Foto2.jpg",
+    "/images/Foto3.jpg"
   ];
 
   useEffect(() => {

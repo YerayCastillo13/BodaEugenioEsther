@@ -212,9 +212,7 @@ const InstagramIcon = () => (
   </svg>
 );
 const MusicCircle = () => (
-  <svg viewBox="0 0 20 20" fill="currentColor">
-    <path d="M14 4 L14 12.2 A 3 3 0 1 1 12 9.2 V 7 L 8 8 V 14.2 A 3 3 0 1 1 6 11.2 V 5 Z" />
-  </svg>
+  <symbol viewBox="0 0 24 24" id="mynaui-music-solid"><!-- Icon from Myna UI Icons by Praveen Juge - https://github.com/praveenjuge/mynaui-icons/blob/main/LICENSE --><path fill="currentColor" d="M19.978 4.251c.141-.013.272.1.272.255v9.07a3.5 3.5 0 0 0-2.062-.665c-1.977 0-3.563 1.621-3.563 3.6s1.586 3.6 3.563 3.6c1.976 0 3.562-1.622 3.562-3.6V4.506c0-1.029-.88-1.843-1.91-1.749l-10.375.956a1.753 1.753 0 0 0-1.59 1.748v9.254a3.5 3.5 0 0 0-2.062-.664c-1.977 0-3.563 1.621-3.563 3.6c0 1.978 1.586 3.599 3.563 3.599c1.976 0 3.562-1.62 3.562-3.6V5.462c0-.135.102-.243.228-.254z"></path></symbol>
 );
 
 // ------- Hooks -------

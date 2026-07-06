@@ -212,7 +212,7 @@ const InstagramIcon = () => (
   </svg>
 );
 const MusicCircle = () => (
-  <svg width="800px" height="800px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+<svg width="800px" height="800px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#ffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
 <circle cx="4" cy="12" r="2.25"/>
 <circle cx="12" cy="11" r="2.25"/>
 <polyline points="6.25 12,6.25 2.75,14.25 1.75,14.25 11"/>

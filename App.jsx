@@ -397,9 +397,9 @@ function Invitation() {
   };
 
   const photos = [
-    "/images/Foto1.jpg",
-    "/images/Foto2.jpg",
-    "/images/Foto3.jpg"
+    "/images/Foto1.jpeg",
+    "/images/Foto2.jpeg",
+    "/images/Foto3.jpeg"
   ];
 
   useEffect(() => {

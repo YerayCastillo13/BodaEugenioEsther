@@ -435,6 +435,7 @@ function Invitation() {
     <div className="invite">
       {/* ======= HERO ======= */}
       <section className="hero">
+       <div className="hero-pin">
 
         <div
             className="hero-bg"
@@ -491,6 +492,7 @@ function Invitation() {
         <HeartIcon className="heart-pulse" />
       </div>
 
+       </div>
       </section>
 
       {/* <SectionDivider from="#faf5ec" to="#ffffff" /> */}

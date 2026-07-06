@@ -591,14 +591,14 @@ function Invitation() {
       <SectionDivider from="#ffffff" to="#ffffff" />
 
       {/* ======= REGALOS ======= */}
-      <section ref={giftsRef} className={`gifts ${giftsInView ? 'animate-in' : ''}`}>
+      {/* <section ref={giftsRef} className={`gifts ${giftsInView ? 'animate-in' : ''}`}>
         <h2 className="section-title">Regalos</h2>
         <p className="lead">Si deseáis regalarnos algo más que vuestra hermosa presencia&hellip;</p>
         <div className="gift-icon"><GiftIcon /></div>
         <button className="btn-pill lg" onClick={() => setModal("regalos")}>Número de IBAN</button>
       </section>
 
-      <SectionDivider from="#ffffff" to="#ffffff" />
+      <SectionDivider from="#ffffff" to="#ffffff" /> */}
 
       {/* ======= INSTAGRAM ======= */}
       <section ref={igRef} className={`ig ${igInView ? 'animate-in' : ''}`}>

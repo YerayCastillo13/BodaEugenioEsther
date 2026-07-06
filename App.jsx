@@ -539,7 +539,7 @@ function Invitation() {
           <AdornoSmall className="event-divider" />
           <p className="event-sub">Día</p>
           <p className="event-detail">Sábado 03 de Julio&nbsp;-&nbsp;19:00h</p>
-          <button className="btn-pill" onClick={() => setModal("agenda1")} style="display: none;">Agendar</button>
+          {/* <button className="btn-pill" onClick={() => setModal("agenda1")}>Agendar</button> */}
           <p className="event-sub">Lugar</p>
           <p className="event-detail">Vara Restaurante & Eventos<br />A-42, Km 31, 45200<br />Illescas<br />Toledo</p>
           <button className="btn-pill" onClick={() => setModal("map1")}>¿Cómo llegar?</button>

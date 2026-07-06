@@ -645,7 +645,7 @@ function Invitation() {
       </SimpleModal>
       <SimpleModal open={modal === "tips"} onClose={() => setModal(null)} title="Tips y Notas" icon={<ClipboardIcon />}>
         <ul style={{ textAlign: "left", fontFamily: "Quattrocento", fontSize: 13, color: "var(--ink)", lineHeight: 1.7, paddingLeft: 18 }}>
-          <li>La ceremonia comenzará a las 19h.</li>
+          <li>La ceremonia comenzará a las 19:00h ¡Sed puntuales!</li>
           <li>Habrá servicio de guardarropa en la entrada.</li>
           <li>El evento es exclusivo para adultos.</li>
           <li>Se solicita evitar el uso del teléfono durante la ceremonia.</li>

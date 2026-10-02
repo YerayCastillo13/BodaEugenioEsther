@@ -625,7 +625,7 @@ function Invitation() {
           <li><a href="#" onClick={(e) => { e.preventDefault(); setModal("confirm"); }}>Confirmar asistencia</a></li>
           {/* <li><a href="#" onClick={(e) => { e.preventDefault(); setModal("musica"); }}>Sugerir canción</a></li> */}
           {/* <li><a href="#" onClick={(e) => { e.preventDefault(); setModal("agenda2"); }}>Agendar Fiesta</a></li> */}
-          <li><a href="#" onClick={(e) => { e.preventDefault(); setModal("agenda1"); }}>Agendar Ceremonia</a></li>
+          {/* <li><a href="#" onClick={(e) => { e.preventDefault(); setModal("agenda1"); }}>Agendar Ceremonia</a></li> */}
         </ul>
         <div className="credit">
           Desarrollado con <span className="heart">♥</span>

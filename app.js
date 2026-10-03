@@ -14,7 +14,7 @@
     iban: "ES12 3456 7890 1234 5678 9012",
     titulares: "Eugenio & Esther",
     instagramTag: "eugenio&esther",
-    photos: ["/public/images/Foto1.jpeg", "/public/images/Foto2.jpeg", "/public/images/Foto3.jpeg"],
+    photos: ["/images/Foto1.jpeg", "/images/Foto2.jpeg", "/images/Foto3.jpeg"],
     mapsQuery: "Vara Restaurante Eventos Illescas",
     mapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses",
     // Fase 3: aquí irá la URL del Google Apps Script Web App
@@ -167,11 +167,15 @@
       buildDivider(),
       buildFiesta(),
       buildDivider(),
-      buildInstagram(),
-      buildDivider(),
       buildFooter()
     ]);
     app.appendChild(invite);
+    // El botón de música y el <audio> cuelgan directamente del body (fuera de
+    // .invite, que tiene overflow:hidden + transform) para que el botón
+    // "fixed" quede realmente fijo en la pantalla y nunca se recorte ni
+    // quede tapado por las secciones con z-index propio.
+    document.body.appendChild(el("audio", { id: "bgm", src: "/public/musica/dtmf.mp3", loop: "", preload: "none", style: "display:none" }));
+    document.body.appendChild(el("button", { class: "music-toggle", id: "musicToggle", "aria-label": "Música", html: ICON.musicCircle() }));
     app.appendChild(window.__BODA__.modals.buildModalsRoot());
     app.appendChild(window.__BODA__.modals.buildLightboxRoot());
     app.appendChild(el("div", { class: "toast", id: "toast" }));
@@ -185,8 +189,6 @@
   function buildHero() {
     var heroPin = el("div", { class: "hero-pin" }, [
       el("div", { class: "hero-bg" }),
-      el("audio", { id: "bgm", src: "/public/musica/dtmf.mp3", loop: "", preload: "none", style: "display:none" }),
-      el("button", { class: "music-toggle", id: "musicToggle", "aria-label": "Música", html: ICON.musicCircle() }),
       el("div", { class: "hero-top-ornament", html: ICON.botanicalTop() }),
       el("div", { class: "hero-date", id: "heroDate" }, [
         el("span", { html: ICON.dateFlourish(true) }),
@@ -197,12 +199,12 @@
         "Eugenio", el("span", { class: "amp" }, ["&"]), "Esther"
       ]),
       el("div", { class: "hero-rule" }),
-      el("p", { class: "hero-sub", id: "heroSub" }, ["Nuestra invitación a la Boda"]),
+      el("p", { class: "hero-sub", id: "heroSub" }, ["¡Nos casamos!"]),
       el("div", { class: "quote", id: "heroQuote" }, [
         el("span", { class: "quote-mark top" }, ["\u201C"]),
-        "Todos somos mortales,", el("br"),
-        "hasta el primer beso", el("br"),
-        "y la segunda copa de vino",
+        "El amor no se mide en tiempo,", el("br"),
+        "se mide en los momentos", el("br"),
+        "que decidimos compartir",
         el("span", { class: "quote-mark bottom" }, ["\u201D"])
       ]),
       buildCountdownBlock()
@@ -273,9 +275,6 @@
     addSwipe(carousel);
 
     var section = el("section", { class: "gallery-wrap pxy", id: "gallerySection" }, [
-      el("h2", { class: "section-title" }, ["Retratos de Nuestro Amor"]),
-      el("p", { class: "lead" }, ["Un minuto, un segundo, un instante que queda en la eternidad"]),
-      el("div", { class: "camera-icon", html: ICON.camera() }),
       carousel,
       dots
     ]);
@@ -332,38 +331,25 @@
 
   /* ---------- Fiesta ---------- */
   function buildFiesta() {
-    function card(opts) {
-      var c = el("div", { class: "fiesta-card large", id: opts.id }, [
+    function subcard(opts) {
+      return el("div", { class: "fiesta-card large", id: opts.id }, [
         el("h4", {}, [opts.title]),
         el("div", { class: "fiesta-icon", html: opts.icon }),
         el("p", {}, [opts.text]),
         el("button", { class: "btn-pill", onClick: opts.onClick }, [opts.cta])
       ]);
-      return c;
     }
     var grid = el("div", { class: "fiesta-grid" }, [
-      card({ id: "tipsCard", title: "Tips y Notas", icon: ICON.clipboard(), text: "Información adicional para tener en cuenta", cta: "+ Info", onClick: function () { openModal("tips"); } }),
-      card({ id: "alojCard", title: "Alojamientos", icon: ICON.hotel(), text: "Opciones de hospedaje recomendadas", cta: "+ Info", onClick: function () { openModal("alojamientos"); } })
+      subcard({ id: "tipsCard", title: "Tips y Notas", icon: ICON.clipboard(), text: "Información adicional para tener en cuenta", cta: "+ Info", onClick: function () { openModal("tips"); } }),
+      subcard({ id: "alojCard", title: "Alojamientos", icon: ICON.hotel(), text: "Alojamientos cercanos que podéis reservar", cta: "+ Info", onClick: function () { openModal("alojamientos"); } })
     ]);
-    return el("div", {}, [
-      el("section", { class: "fiesta-intro pxy", id: "fiestaIntro" }, [
-        el("h2", { class: "section-title" }, ["Toma nota..."]),
-        el("p", { class: "lead" }, ["Hagamos juntos una fiesta única. Os dejamos algunos detalles a tener en cuenta."])
-      ]),
+    // Una única card grande que envuelve el título y las dos subcards.
+    var card = el("div", { class: "event-card fiesta-outer-card", id: "fiestaIntro" }, [
+      el("h2", { class: "section-title" }, ["Toma nota..."]),
+      el("p", { class: "lead" }, ["Hagamos juntos una fiesta única. Os dejamos algunos detalles a tener en cuenta."]),
       grid
     ]);
-  }
-
-  /* ---------- Instagram ---------- */
-  function buildInstagram() {
-    var url = "https://www.instagram.com/explore/tags/eugenioesther/";
-    return el("section", { class: "ig pxy", id: "igSection" }, [
-      el("h2", { class: "section-title" }, ["Compartimos este día junto a ti"]),
-      el("p", { class: "lead" }, ["Comparte tus fotos y vídeos de este hermoso día"]),
-      el("div", { class: "ig-icon", html: ICON.instagram() }),
-      el("a", { class: "hashtag", href: url, target: "_blank", rel: "noopener noreferrer" }, ["#" + CONFIG.instagramTag]),
-      el("div", {}, [el("a", { class: "btn-pill", href: url, target: "_blank", rel: "noopener noreferrer", style: "text-decoration:none" }, ["Ver en Instagram"])])
-    ]);
+    return el("section", { class: "fiesta-intro pxy" }, [card]);
   }
 
   /* ---------- Footer ---------- */
@@ -451,10 +437,8 @@
   /* ---- Tips ---- */
   function buildTipsModal() {
     var ul = el("ul", { style: "text-align:left;font-family:Quattrocento,serif;font-size:13px;color:var(--ink);line-height:1.7;padding-left:18px" }, [
-      el("li", {}, ["La ceremonia comenzará a las 19:00h ¡Sed puntuales!"]),
-      el("li", {}, ["Habrá servicio de guardarropa en la entrada."]),
-      el("li", {}, ["El evento es exclusivo para adultos."]),
-      el("li", {}, ["Se solicita evitar el uso del teléfono durante la ceremonia."])
+      el("li", {}, ["La ceremonia comenzará a las 19:00h, por lo que debéis asistir de 15 a 20 minutos antes. ¡Sed puntuales!"]),
+      el("li", {}, ["A unos minutos a pie tendréis la posibilidad de reservar habitación de hotel."])
     ]);
     return modalShell({ title: "Tips y Notas", icon: ICON.clipboard(), body: ul });
   }
@@ -903,16 +887,24 @@
     }, 500);
   }
 
-  /* ---------- Boot loader ---------- */
+  /* ---------- Boot loader ----------
+     Dura un mínimo de 2.2s (aunque todo cargue antes), para que el corazón
+     tenga tiempo de latir un par de veces y dar una primera impresión cuidada
+     en vez de parpadear. Al ocultarse, dispara la entrada sutil de la
+     invitación desde arriba (.page-in). */
+  var BOOT_MIN_MS = 2200;
   function hideBootLoader() {
     var loader = document.getElementById("boot-loader");
+    var invite = $(".invite");
     if (!loader) return;
     loader.classList.add("hide");
-    setTimeout(function () { loader.remove(); }, 450);
+    if (invite) invite.classList.add("page-in");
+    setTimeout(function () { loader.remove(); }, 500);
   }
 
   /* ---------- Init ---------- */
   function init() {
+    var startedAt = Date.now();
     B.build.buildInvite();
     B.build.renderGallery();
     B.build.restartGalleryAutoplay();
@@ -921,7 +913,10 @@
     startScrollReveal();
     startCardTilt();
     initMusic();
-    hideBootLoader();
+
+    var elapsed = Date.now() - startedAt;
+    var remaining = Math.max(0, BOOT_MIN_MS - elapsed);
+    setTimeout(hideBootLoader, remaining);
   }
 
   if (document.readyState === "loading") {

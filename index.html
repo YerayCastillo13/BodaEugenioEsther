@@ -11,11 +11,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <!-- Preload de la imagen de fondo del hero: es lo primero que ve el invitado -->
-<link rel="preload" as="image" href="/public/images/prueba_HeroBG.jpg">
+<link rel="preload" as="image" href="/images/prueba_HeroBG.jpg">
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Infant:ital,wght@0,400;0,500;0,600;1,400&family=Quattrocento:wght@400;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="/public/favicon/favicon-32x32.png">
-
 
 <style>
   :root {
@@ -45,49 +44,22 @@
     font-size: 15px;
   }
 
-  /* ====== Animaciones Scroll — entrada "parallax" por capas de profundidad ======
-     Las secciones parten de más abajo y ligeramente más pequeñas/difuminadas,
-     como si vinieran desde el fondo de la escena, y frenan con overshoot suave. */
-  @keyframes risefromDepth {
-    0%   { opacity: 0; transform: translateY(54px) scale(0.96); filter: blur(2px); }
-    60%  { opacity: 1; filter: blur(0); }
-    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @keyframes scaleInDepth {
-    0%   { opacity: 0; transform: translateY(26px) scale(0.9); }
-    70%  { transform: translateY(-3px) scale(1.015); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  section.pxy, .reveal-el {
+  /* ====== Parallax de capas — controlado por JS en cada frame de scroll ======
+     El estado (transform/opacity/box-shadow) de .pxy, .event-card y .fiesta-card
+     lo fija por completo startScrollReveal() en app.js, frame a frame, para que
+     cada sección suba físicamente y tape a la anterior. El estado inicial aquí
+     es solo el "primer pintado" antes de que JS calcule la posición real. */
+  section.pxy, .event-card, .fiesta-card {
     opacity: 0;
-    will-change: transform, opacity, filter;
+    will-change: transform, opacity, box-shadow;
   }
-  section.pxy.animate-in {
-    animation: risefromDepth 0.9s cubic-bezier(0.16, 0.9, 0.3, 1) forwards;
-  }
-  /* Elementos hijos dentro de una sección revelada entran escalonados (stagger) */
-  .reveal-el.animate-in {
-    animation: risefromDepth 0.7s cubic-bezier(0.16, 0.9, 0.3, 1) forwards;
-  }
-  .event-card, .fiesta-card { opacity: 0; will-change: transform, opacity; }
-  .event-card.animate-in,
-  .fiesta-card.animate-in {
-    animation: scaleInDepth 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
+  section.pxy { position: relative; }
 
   @media (prefers-reduced-motion: reduce) {
-    section.pxy.animate-in, .reveal-el.animate-in, .event-card.animate-in, .fiesta-card.animate-in,
-    .hero-names, .hero-date, .hero-sub, .quote, .counter, .heart-pulse,
-    .camera-icon {
-      animation: none !important;
+    section.pxy, .event-card, .fiesta-card {
       opacity: 1 !important;
       transform: none !important;
-      filter: none !important;
+      box-shadow: none !important;
     }
   }
 
@@ -162,7 +134,7 @@
     z-index: 0;
     background-image:
       linear-gradient(rgb(250 245 236 / 82%), rgb(250 245 236 / 79%)),
-      url(/public/images/prueba_HeroBG.jpg);
+      url(/images/prueba_HeroBG.jpg);
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -392,6 +364,12 @@
   .event-card-soft:hover { transform: translateY(-8px); box-shadow: 0 12px 28px rgba(60, 45, 20, 0.12); }
   .event-icon { width: 54px; height: 54px; margin: 0 auto 14px; color: var(--gold); transition: transform 0.3s ease; }
   .event-card:hover .event-icon { transform: scale(1.1) rotate(5deg); }
+  @keyframes iconPop {
+    0% { transform: scale(0.5) rotate(-8deg); }
+    55% { transform: scale(1.18) rotate(4deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  .card-in .event-icon, .card-in .fiesta-icon { animation: iconPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
   .event-card h3 { font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: 22px; color: var(--ink); margin: 0 0 8px; }
   .event-divider { display: block; width: 60px; height: 14px; margin: 0 auto 10px; opacity: 0.85; }
   .event-sub { font-family: "Cormorant Garamond", serif; font-weight: 500; font-style: italic; color: var(--ink); font-size: 16px; margin: 8px 0 3px; }
@@ -691,7 +669,7 @@
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-radius: 18px;
-    margin: 24px 12px;
+    margin: 40px 12px;
   }
 
   /* spinner pequeño para el botón al enviar */

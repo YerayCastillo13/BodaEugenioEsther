@@ -1,4 +1,3 @@
-
 /* ============================================================
    Boda de Eugenio & Esther — app.js
    Vanilla JS, sin frameworks. Todo el markup se genera aquí
@@ -15,7 +14,7 @@
     iban: "ES12 3456 7890 1234 5678 9012",
     titulares: "Eugenio & Esther",
     instagramTag: "eugenio&esther",
-    photos: ["/public/images/Foto1.jpeg", "/public/images/Foto2.jpeg", "/public/images/Foto3.jpeg"],
+    photos: ["/images/Foto1.jpeg", "/images/Foto2.jpeg", "/images/Foto3.jpeg"],
     mapsQuery: "Vara Restaurante Eventos Illescas",
     mapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses",
     // Fase 3: aquí irá la URL del Google Apps Script Web App
@@ -186,7 +185,7 @@
   function buildHero() {
     var heroPin = el("div", { class: "hero-pin" }, [
       el("div", { class: "hero-bg" }),
-      el("audio", { id: "bgm", src: " public/musica/dtmf.mp3", loop: "", preload: "none", style: "display:none" }),
+      el("audio", { id: "bgm", src: "/public/musica/dtmf.mp3", loop: "", preload: "none", style: "display:none" }),
       el("button", { class: "music-toggle", id: "musicToggle", "aria-label": "Música", html: ICON.musicCircle() }),
       el("div", { class: "hero-top-ornament", html: ICON.botanicalTop() }),
       el("div", { class: "hero-date", id: "heroDate" }, [
@@ -790,125 +789,85 @@
     window.addEventListener("scroll", onScroll, { passive: true });
   }
 
-  /* ---------- Scroll-reveal (IntersectionObserver) ---------- »
-     Las .pxy (secciones completas) y las .event-card/.fiesta-card (capas internas)
-     se observan juntas; al entrar en viewport se añade .animate-in, que dispara
-     la animación "risefromDepth" / "scaleInDepth" definida en CSS. Las cards
-     dentro de una misma sección se escalonan con un pequeño delay para que no
-     entren todas a la vez (sensación de capas, no de bloque plano). */
-  // Marca el elemento como "asentado" en cuanto termina su animación de
-  // entrada CSS, limpiando el animationDelay del stagger. A partir de ahí,
-  // startCardTilt puede tomar el control de su transform sin pisar la
-  // animación de aparición (evita el choque transform-CSS vs transform-JS).
-  function markSettledOnEnd(el) {
-    function onEnd(e) {
-      if (e.target !== el) return;
-      el.classList.add("pxy-settled");
-      el.style.animationDelay = "";
-      el.removeEventListener("animationend", onEnd);
-    }
-    el.addEventListener("animationend", onEnd);
-  }
-
+  /* ---------- Parallax de "capas que suben y tapan" ----------
+     Sistema único y continuo (sin IntersectionObserver ni animationend):
+     cada .pxy se controla en TODO momento según su posición en el viewport.
+     Mientras está por debajo de la pantalla, permanece desplazada hacia abajo
+     (oculta). A medida que el scroll la acerca, sube con su propia velocidad
+     (más rápida que el scroll nativo) hasta cubrir por completo lo anterior,
+     con una sombra que reafirma que está "por encima" de la capa de debajo.
+     Esto es lo que produce el efecto de capas subiendo y tapando la vista. */
   function startScrollReveal() {
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var sections = $all(".pxy");
-    var cardGroups = $all(".events, .fiesta-grid"); // contenedores de cards a escalonar
-    var parallaxSections = $all(".gallery-wrap, .fiesta-intro, .ig");
+    var cardGroups = $all(".events, .fiesta-grid");
 
-    parallaxSections.forEach(markSettledOnEnd);
-
-    if (!("IntersectionObserver" in window)) {
-      sections.forEach(function (t) { t.classList.add("animate-in"); t.classList.add("pxy-settled"); });
-      $all(".event-card, .fiesta-card").forEach(function (t) { t.classList.add("animate-in"); t.classList.add("pxy-settled"); });
+    if (reduceMotion || !sections.length) {
+      sections.forEach(function (t) { t.style.opacity = 1; t.style.transform = "none"; });
+      $all(".event-card, .fiesta-card").forEach(function (t) { t.style.opacity = 1; t.style.transform = "none"; });
       return;
     }
-
-    var sectionObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("animate-in");
-          sectionObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: "40px" });
-    sections.forEach(function (t) { sectionObserver.observe(t); });
-
-    var cardObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          var cards = B.$all(".event-card, .fiesta-card", entry.target);
-          cards.forEach(function (card, i) {
-            card.style.animationDelay = (i * 0.12) + "s";
-            card.classList.add("animate-in");
-            markSettledOnEnd(card);
-          });
-          cardObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15, rootMargin: "40px" });
-    cardGroups.forEach(function (g) { cardObserver.observe(g); });
-
-    // #eventCard y #confirmCard viven dentro de .confirm.pxy (no de .events),
-    // así que necesitan su propio observer para el efecto scaleInDepth.
-    var loneCards = $all("#eventCard, #confirmCard");
-    loneCards.forEach(function (card) {
-      markSettledOnEnd(card);
-      var obs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-in");
-            obs.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.15, rootMargin: "40px" });
-      obs.observe(card);
-    });
-  }
-
-  /* ---------- Micro-interacción de elevación en cards al centrarse (ligera, con throttle) ---------- */
-  /* ---------- Parallax de scroll en cards y secciones (tras su entrada) ----------
-     Cada card/sección sigue entrando con su animación CSS (risefromDepth /
-     scaleInDepth) definida en startScrollReveal. Una vez esa animación termina
-     (animationend), esta función toma el control del transform y le da un
-     desplazamiento continuo ligado al scroll, a una velocidad propia según su
-     "profundidad" (data-depth), para que el efecto se note de verdad mientras
-     el usuario recorre la página, no solo al aparecer. */
-  function startCardTilt() {
-    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) return;
-
-    // profundidad por tipo de elemento: valores más altos = se mueve más
-    var targets = [];
-    function collect() {
-      targets = [];
-      $all(".event-card, .fiesta-card").forEach(function (c) { targets.push({ el: c, depth: 14 }); });
-      $all(".gallery-wrap, .fiesta-intro, .ig").forEach(function (c) { targets.push({ el: c, depth: 20 }); });
-    }
-    collect();
 
     var ticking = false;
     function update() {
       ticking = false;
       var windowH = window.innerHeight;
-      targets.forEach(function (t) {
-        // Solo aplicamos el parallax a elementos que ya terminaron su entrada
-        // (se marcan con .pxy-settled desde startScrollReveal) para no pisar
-        // la animación de aparición.
-        if (!t.el.classList.contains("pxy-settled")) return;
-        var rect = t.el.getBoundingClientRect();
-        var centerY = rect.top + rect.height / 2;
-        var dist = (centerY - windowH / 2) / windowH; // -0.5..0.5 aprox, con signo
-        var translateY = dist * t.depth * -1;
-        t.el.style.transform = "translateY(" + translateY.toFixed(2) + "px)";
+      sections.forEach(function (sec, i) {
+        var rect = sec.getBoundingClientRect();
+        // progress: 0 cuando el borde superior de la sección está justo en el
+        // borde inferior de la pantalla (aún no visible), 1 cuando ha llegado
+        // a su posición natural (top del viewport). Se adelanta la entrada
+        // (* 1.35) para que suba con más fuerza que el propio scroll: esto es
+        // lo que crea la sensación de "subir y tapar" en vez de solo deslizar.
+        var raw = 1 - (rect.top / windowH);
+        var progress = Math.max(0, Math.min(1, raw * 1.35));
+        var ease = 1 - Math.pow(1 - progress, 3);
+
+        var translateY = (1 - ease) * 90; // sube 90px desde abajo hasta su sitio
+        var scale = 0.94 + ease * 0.06;
+        var opacity = Math.min(1, progress * 1.8);
+        var shadow = ease * 0.22;
+
+        sec.style.transform = "translate3d(0," + translateY.toFixed(1) + "px,0) scale(" + scale.toFixed(3) + ")";
+        sec.style.opacity = opacity.toFixed(2);
+        sec.style.boxShadow = "0 -" + (18 * ease).toFixed(0) + "px " + (40 * ease).toFixed(0) + "px rgba(40,30,10," + shadow.toFixed(2) + ")";
+        sec.style.zIndex = String(10 + i);
+      });
+      // Las cards dentro de cada grid suben escalonadas, detrás del progreso de su sección.
+      cardGroups.forEach(function (group) {
+        var cards = B.$all(".event-card, .fiesta-card", group);
+        var rect = group.getBoundingClientRect();
+        var raw = 1 - (rect.top / windowH);
+        var baseProgress = Math.max(0, Math.min(1, raw * 1.35));
+        cards.forEach(function (card, i) {
+          var p = Math.max(0, Math.min(1, baseProgress * 1.15 - i * 0.12));
+          var ease = 1 - Math.pow(1 - p, 3);
+          card.style.transform = "translate3d(0," + ((1 - ease) * 46).toFixed(1) + "px,0) scale(" + (0.9 + ease * 0.1).toFixed(3) + ")";
+          card.style.opacity = Math.min(1, p * 1.6).toFixed(2);
+          if (p > 0.55 && !card.classList.contains("card-in")) card.classList.add("card-in");
+        });
+      });
+      // #eventCard y #confirmCard (sueltas, dentro de .confirm.pxy)
+      $all("#eventCard, #confirmCard").forEach(function (card) {
+        var rect = card.getBoundingClientRect();
+        var raw = 1 - (rect.top / windowH);
+        var p = Math.max(0, Math.min(1, raw * 1.35));
+        var ease = 1 - Math.pow(1 - p, 3);
+        card.style.transform = "translate3d(0," + ((1 - ease) * 46).toFixed(1) + "px,0) scale(" + (0.9 + ease * 0.1).toFixed(3) + ")";
+        card.style.opacity = Math.min(1, p * 1.6).toFixed(2);
+        if (p > 0.55 && !card.classList.contains("card-in")) card.classList.add("card-in");
       });
     }
+
     window.addEventListener("scroll", function () {
       if (!ticking) { ticking = true; requestAnimationFrame(update); }
     }, { passive: true });
-    // Si cambia el DOM (poco probable aquí, pero por seguridad tras build inicial)
-    window.addEventListener("resize", function () { collect(); }, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
     update();
   }
+
+  // Alias para mantener compatibilidad con la llamada en init()
+  function startCardTilt() {}
 
   /* ---------- Música ---------- */
   function initMusic() {

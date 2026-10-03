@@ -831,8 +831,9 @@
           if (p > 0.55 && !card.classList.contains("card-in")) card.classList.add("card-in");
         });
       });
-      // #eventCard y #confirmCard (sueltas, dentro de .confirm.pxy)
-      $all("#eventCard, #confirmCard").forEach(function (card) {
+      // #eventCard, #confirmCard y #fiestaIntro (cards sueltas dentro de su .pxy,
+      // no de .events/.fiesta-grid, así que necesitan animarse aquí explícitamente)
+      $all("#eventCard, #confirmCard, #fiestaIntro").forEach(function (card) {
         var rect = card.getBoundingClientRect();
         var raw = 1 - (rect.top / windowH);
         var p = Math.max(0, Math.min(1, raw * 1.35));

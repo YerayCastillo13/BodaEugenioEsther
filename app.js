@@ -236,7 +236,7 @@
       el("p", { class: "event-detail" }, ["Vara Restaurante & Eventos", el("br"), "A-42, Km 31, 45200", el("br"), "Illescas", el("br"), "Toledo"]),
       el("button", { class: "btn-pill", onClick: function () { openModal("map1"); } }, ["¿Cómo llegar?"])
     ]);
-    return el("section", { class: "confirm" }, [card]);
+    return el("section", { class: "confirm pxy" }, [card]);
   }
 
   function buildConfirmAsistencia() {
@@ -246,7 +246,7 @@
       el("p", { class: "event-detail" }, ["Es importante que confirmes tu asistencia"]),
       el("button", { class: "btn-pill lg", onClick: function () { openModal("confirm"); } }, ["Confirmar asistencia"])
     ]);
-    return el("section", { class: "confirm" }, [card]);
+    return el("section", { class: "confirm pxy" }, [card]);
   }
 
   /* ---------- Galería ---------- */
@@ -272,7 +272,7 @@
     var carousel = el("div", { class: "carousel", id: "carousel" }, [track]);
     addSwipe(carousel);
 
-    var section = el("section", { class: "gallery-wrap", id: "gallerySection" }, [
+    var section = el("section", { class: "gallery-wrap pxy", id: "gallerySection" }, [
       el("h2", { class: "section-title" }, ["Retratos de Nuestro Amor"]),
       el("p", { class: "lead" }, ["Un minuto, un segundo, un instante que queda en la eternidad"]),
       el("div", { class: "camera-icon", html: ICON.camera() }),
@@ -346,7 +346,7 @@
       card({ id: "alojCard", title: "Alojamientos", icon: ICON.hotel(), text: "Opciones de hospedaje recomendadas", cta: "+ Info", onClick: function () { openModal("alojamientos"); } })
     ]);
     return el("div", {}, [
-      el("section", { class: "fiesta-intro", id: "fiestaIntro" }, [
+      el("section", { class: "fiesta-intro pxy", id: "fiestaIntro" }, [
         el("h2", { class: "section-title" }, ["Toma nota..."]),
         el("p", { class: "lead" }, ["Hagamos juntos una fiesta única. Os dejamos algunos detalles a tener en cuenta."])
       ]),
@@ -357,7 +357,7 @@
   /* ---------- Instagram ---------- */
   function buildInstagram() {
     var url = "https://www.instagram.com/explore/tags/eugenioesther/";
-    return el("section", { class: "ig", id: "igSection" }, [
+    return el("section", { class: "ig pxy", id: "igSection" }, [
       el("h2", { class: "section-title" }, ["Compartimos este día junto a ti"]),
       el("p", { class: "lead" }, ["Comparte tus fotos y vídeos de este hermoso día"]),
       el("div", { class: "ig-icon", html: ICON.instagram() }),
@@ -725,10 +725,12 @@
     if (reduceMotion) return;
 
     var bg = $(".hero-bg");
+    var ornament = $(".hero-top-ornament");
     var heroDate = $("#heroDate");
     var heroNames = $("#heroNames");
     var heroSub = $("#heroSub");
     var heroQuote = $("#heroQuote");
+    var countdownBlock = $("#countdownBlock");
 
     var targetY = 0, currentY = 0;
     var ticking = false;
@@ -743,17 +745,30 @@
       currentY += (targetY - currentY) * 0.12;
       if (Math.abs(targetY - currentY) < 0.05) currentY = targetY;
 
-      // Fondo: limitado a los primeros ~500px de scroll, con easing
-      var limit = 500;
+      // Fondo: capa más lenta y profunda, con leve zoom-out progresivo
+      // (sensación de hundirse en la escena, no solo desplazarse) + oscurecimiento sutil.
+      var limit = 560;
       var progress = Math.min(currentY / limit, 1);
       var ease = 1 - Math.pow(1 - progress, 3);
-      var factor = 0.15 + (0.2 * (1 - ease));
-      if (bg) bg.style.transform = "translate3d(0," + (currentY * factor) + "px,0)";
+      var factor = 0.18 + (0.24 * (1 - ease));
+      var scale = 1 + progress * 0.06;
+      if (bg) {
+        bg.style.transform = "translate3d(0," + (currentY * factor) + "px,0) scale(" + scale + ")";
+        bg.style.filter = "brightness(" + (1 - progress * 0.12) + ")";
+      }
 
-      if (heroDate) heroDate.style.transform = "translate3d(0," + (currentY * 0.03) + "px,0)";
-      if (heroNames) heroNames.style.transform = "translate3d(0," + (currentY * 0.05) + "px,0)";
-      if (heroSub) heroSub.style.transform = "translate3d(0," + (currentY * 0.02) + "px,0)";
-      if (heroQuote) heroQuote.style.transform = "translate3d(0," + (currentY * 0.01) + "px,0)";
+      // Capas de texto a distinta velocidad: cuanto más "cerca" del lector,
+      // más rápido se mueve (mayor factor) → sensación real de profundidad.
+      if (ornament) ornament.style.transform = "translate3d(0," + (currentY * 0.02) + "px,0)";
+      if (heroDate) heroDate.style.transform = "translate3d(0," + (currentY * 0.05) + "px,0)";
+      if (heroNames) heroNames.style.transform = "translate3d(0," + (currentY * 0.09) + "px,0)";
+      if (heroSub) heroSub.style.transform = "translate3d(0," + (currentY * 0.04) + "px,0)";
+      if (heroQuote) heroQuote.style.transform = "translate3d(0," + (currentY * 0.015) + "px,0)";
+      if (countdownBlock) {
+        var cdOpacity = Math.max(0, 1 - progress * 1.4);
+        countdownBlock.style.transform = "translate3d(0," + (currentY * 0.07) + "px,0)";
+        countdownBlock.style.opacity = cdOpacity;
+      }
 
       if (Math.abs(targetY - currentY) > 0.05) requestAnimationFrame(frame);
     }
@@ -761,22 +776,60 @@
     window.addEventListener("scroll", onScroll, { passive: true });
   }
 
-  /* ---------- Scroll-reveal (IntersectionObserver) ---------- */
+  /* ---------- Scroll-reveal (IntersectionObserver) ---------- »
+     Las .pxy (secciones completas) y las .event-card/.fiesta-card (capas internas)
+     se observan juntas; al entrar en viewport se añade .animate-in, que dispara
+     la animación "risefromDepth" / "scaleInDepth" definida en CSS. Las cards
+     dentro de una misma sección se escalonan con un pequeño delay para que no
+     entren todas a la vez (sensación de capas, no de bloque plano). */
   function startScrollReveal() {
-    var targets = $all("#countdownBlock, #eventCard, #confirmCard, #gallerySection, #fiestaIntro, .fiesta-card, #igSection");
+    var sections = $all(".pxy");
+    var cardGroups = $all(".events, .fiesta-grid"); // contenedores de cards a escalonar
+
     if (!("IntersectionObserver" in window)) {
-      targets.forEach(function (t) { t.classList.add("animate-in"); });
+      sections.forEach(function (t) { t.classList.add("animate-in"); });
+      $all(".event-card, .fiesta-card").forEach(function (t) { t.classList.add("animate-in"); });
       return;
     }
-    var observer = new IntersectionObserver(function (entries) {
+
+    var sectionObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
           entry.target.classList.add("animate-in");
-          observer.unobserve(entry.target);
+          sectionObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: "50px" });
-    targets.forEach(function (t) { observer.observe(t); });
+    }, { threshold: 0.12, rootMargin: "40px" });
+    sections.forEach(function (t) { sectionObserver.observe(t); });
+
+    var cardObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var cards = B.$all(".event-card, .fiesta-card", entry.target);
+          cards.forEach(function (card, i) {
+            card.style.animationDelay = (i * 0.12) + "s";
+            card.classList.add("animate-in");
+          });
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "40px" });
+    cardGroups.forEach(function (g) { cardObserver.observe(g); });
+
+    // #eventCard y #confirmCard viven dentro de .confirm.pxy (no de .events),
+    // así que necesitan su propio observer para el efecto scaleInDepth.
+    var loneCards = $all("#eventCard, #confirmCard");
+    loneCards.forEach(function (card) {
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-in");
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: "40px" });
+      obs.observe(card);
+    });
   }
 
   /* ---------- Micro-interacción de elevación en cards al centrarse (ligera, con throttle) ---------- */

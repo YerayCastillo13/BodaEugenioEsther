@@ -313,17 +313,16 @@
     margin-top: 3px;
   }
   .heart-pulse {
-    margin: 14px auto 0;
-    width: 26px;
+    margin: 16px auto 0;
+    width: 34px;
     color: var(--gold);
-    animation: heart 1.6s ease-in-out infinite;
+    transform: scale(1);
+    transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  @keyframes heart {
-    0%, 100% { transform: scale(1); }
-    20% { transform: scale(1.15); }
-    40% { transform: scale(1); }
-    60% { transform: scale(1.08); }
-  }
+  /* El latido ya no es una animación infinita: JS añade/quita esta clase
+     en cada cambio del contador de segundos, así el corazón late exactamente
+     al ritmo real del countdown en vez de a un ritmo arbitrario. */
+  .heart-pulse.beat { transform: scale(1.28); }
 
   /* ====== Invitados ====== */
   .badge-num {
@@ -429,11 +428,11 @@
   .gallery-wrap .lead { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold-deep); font-size: 13px; margin: 0 0 14px; }
   .camera-icon { width: 36px; height: 36px; color: var(--gold); margin: 0 auto 14px; display: block; animation: bounce 2s ease-in-out infinite; }
   @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-  .carousel { position: relative; height: 200px; margin-bottom: 12px; }
+  .carousel { position: relative; height: 230px; margin-bottom: 14px; }
   .carousel-track { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
   .slide {
     position: absolute;
-    width: 180px; height: 130px;
+    width: 205px; height: 150px;
     background: var(--card);
     overflow: hidden;
     border-radius: 8px;
@@ -603,70 +602,70 @@
   .field-error.show { display: block; }
   .modal-field.invalid { border-color: #b4443f; }
 
-  /* ====== Mobile Optimization ====== */
+  /* ====== Mobile Optimization — escala más grande e impactante ====== */
   @media (max-width: 480px) {
     .stage { padding: 0; }
-    .top-ornament { width: 98px; height: 62px; margin: 0 auto 14px; }
-    .top-ornament-lg { width: 114px; height: 76px; margin: 0 auto 18px; }
+    .top-ornament { width: 106px; height: 68px; margin: 0 auto 16px; }
+    .top-ornament-lg { width: 124px; height: 84px; margin: 0 auto 20px; }
     .hero-pin { padding: calc(18px + var(--safe-top)) 20px 0px; }
-    .hero-top-ornament { margin: 4px auto 40px; width: 195px; height: 60px; }
+    .hero-top-ornament { margin: 4px auto 44px; width: 215px; height: 66px; }
     body { font-size: 18px; }
-    .hero-names { font-size: 50px; line-height: 1; }
-    .amp { width: 30px !important; height: 30px !important; font-size: 19px !important; vertical-align: 8px !important; margin: 0 6px !important; }
-    .hero-date { gap: 12px; margin-bottom: 5px; }
-    .hero-date svg { width: 38px; height: 13px; }
-    .hero-rule { width: 220px; margin: 12px auto 10px; }
-    .hero-sub { font-size: 21px; }
-    .quote { margin: 24px auto 0; font-size: 15px; padding: 8px 0; line-height: 1.55; max-width: 300px; }
-    .quote-mark { font-size: 42px; }
+    .hero-names { font-size: 56px; line-height: 1; }
+    .amp { width: 33px !important; height: 33px !important; font-size: 21px !important; vertical-align: 9px !important; margin: 0 7px !important; }
+    .hero-date { gap: 13px; margin-bottom: 6px; }
+    .hero-date svg { width: 42px; height: 14px; }
+    .hero-date span:nth-child(2) { font-size: 33px; }
+    .hero-rule { width: 240px; margin: 14px auto 12px; }
+    .hero-sub { font-size: 23px; }
+    .quote { margin: 26px auto 0; font-size: 16px; padding: 8px 0; line-height: 1.55; max-width: 310px; }
+    .quote-mark { font-size: 46px; }
     .quote-mark.top { margin-bottom: 6px; }
     .quote-mark.bottom { margin-top: 8px; }
     .wave { height: 10px; }
     section.block { padding: 26px 20px 30px; }
-    .countdown-title { font-size: 31px; margin-bottom: 14px; }
-    .counters { max-width: 290px; gap: 0; }
-    .counter-num { font-size: 37px; }
-    .counter-label { font-size: 12.5px; margin-top: 4px; }
-    .heart-pulse { margin: 14px auto 0; width: 30px; }
-    section.block[data-countdown] { padding-top: 18px !important; padding-bottom: 22px !important; }
-    .event-card { padding: 20px 14px 18px; }
-    .event-icon { width: 58px; height: 58px; margin-bottom: 10px; }
-    .event-card h3 { font-size: 23px; line-height: 1.2; margin-bottom: 8px; }
-    .event-divider { height: 13px; margin: 0 auto 10px; width: 56px; }
-    .event-sub { font-size: 17px; margin: 8px 0 4px; }
-    .event-detail { font-size: 13px; margin-bottom: 9px; line-height: 1.45; }
-    .btn-pill { font-size: 13px; padding: 10px 20px; margin-bottom: 3px; }
-    .btn-pill.lg { font-size: 14.5px; padding: 12px 26px; }
-    .events { padding: 26px 14px 26px; gap: 12px; }
-    .confirm { padding: 30px 20px 34px; }
-    .confirm .section-title { font-size: 27px; letter-spacing: 0.01em; }
-    .confirm .lead { font-size: 15px; margin-bottom: 20px; }
-    .gallery-wrap { padding: 34px 0 34px; }
-    .gallery-wrap .section-title { font-size: 30px; margin-bottom: 8px; }
-    .gallery-wrap .lead { font-size: 15px; margin-bottom: 18px; }
-    .camera-icon { width: 38px; height: 38px; margin-bottom: 16px; }
-    .carousel { height: 175px; margin-bottom: 12px; }
-    .slide { width: 155px; height: 112px; }
-    .dots { gap: 8px; margin-top: 6px; }
-    .dot { width: 6px; height: 6px; }
-    .fiesta-intro { padding: 32px 20px 16px; }
-    .fiesta-intro .section-title { font-size: 29px; margin-bottom: 10px; }
-    .fiesta-intro .lead { font-size: 15px; }
-    .fiesta-grid { grid-template-columns: repeat(2, 1fr); padding: 14px 10px 26px; gap: 20px; }
-    .fiesta-card { padding: 16px 10px 16px; }
-    .fiesta-card h4 { font-size: 17px; margin-bottom: 10px; }
-    .fiesta-icon { width: 50px; height: 50px; margin: 2px auto 10px; }
-    .fiesta-card p { font-size: 12px; margin-bottom: 10px; min-height: 22px; }
-    .fiesta-card .btn-pill { font-size: 11px; padding: 7px 14px; }
-    .fiesta-card.large { padding: 18px 12px; grid-column: 1 / -1; }
-    .fiesta-card.large h4 { font-size: 19px; margin-bottom: 8px; }
-    .fiesta-card.large p { font-size: 13px; min-height: 24px; }
-    .fiesta-card.large .fiesta-icon { width: 56px; height: 56px; }
-    .ig { padding: 26px 20px 30px; }
-    .ig .section-title { font-size: 26px; margin-bottom: 8px; }
-    .ig .lead { font-size: 15px; margin-bottom: 16px; }
-    .ig-icon { width: 34px; height: 34px; margin: 3px auto 14px; }
-    .hashtag { font-size: 23px; margin-bottom: 16px; }
+    .countdown-title { font-size: 34px; margin-bottom: 18px; }
+    .counters { max-width: 320px; gap: 0; }
+    .counter-num { font-size: 42px; }
+    .counter-label { font-size: 13.5px; margin-top: 5px; }
+    .heart-pulse { margin: 18px auto 0; width: 40px; }
+    section.block[data-countdown] { padding-top: 18px !important; padding-bottom: 24px !important; }
+    .event-card { padding: 26px 18px 22px; }
+    .event-icon { width: 68px; height: 68px; margin-bottom: 12px; }
+    .event-card h3 { font-size: 26px; line-height: 1.2; margin-bottom: 10px; }
+    .event-divider { height: 15px; margin: 0 auto 12px; width: 64px; }
+    .event-sub { font-size: 19px; margin: 10px 0 5px; }
+    .event-detail { font-size: 14.5px; margin-bottom: 11px; line-height: 1.5; }
+    .btn-pill { font-size: 14px; padding: 12px 22px; margin-bottom: 3px; }
+    .btn-pill.lg { font-size: 16px; padding: 14px 30px; }
+    .events { padding: 28px 14px 28px; gap: 14px; }
+    .confirm { padding: 34px 20px 38px; }
+    .confirm .section-title { font-size: 29px; letter-spacing: 0.01em; }
+    .confirm .lead { font-size: 16px; margin-bottom: 22px; }
+    .gallery-wrap { padding: 38px 0 38px; }
+    .gallery-wrap .section-title { font-size: 32px; margin-bottom: 9px; }
+    .gallery-wrap .lead { font-size: 16px; margin-bottom: 20px; }
+    .camera-icon { width: 42px; height: 42px; margin-bottom: 18px; }
+    .carousel { height: 230px; margin-bottom: 14px; }
+    .slide { width: 205px; height: 150px; }
+    .dots { gap: 8px; margin-top: 8px; }
+    .fiesta-intro { padding: 36px 20px 18px; }
+    .fiesta-intro .section-title { font-size: 32px; margin-bottom: 11px; }
+    .fiesta-intro .lead { font-size: 16px; }
+    .fiesta-grid { grid-template-columns: repeat(2, 1fr); padding: 16px 12px 30px; gap: 22px; }
+    .fiesta-card { padding: 20px 12px 20px; }
+    .fiesta-card h4 { font-size: 19px; margin-bottom: 11px; }
+    .fiesta-icon { width: 58px; height: 58px; margin: 2px auto 12px; }
+    .fiesta-card p { font-size: 13px; margin-bottom: 11px; min-height: 24px; }
+    .fiesta-card .btn-pill { font-size: 12.5px; padding: 9px 16px; }
+    .fiesta-card.large { padding: 22px 14px; grid-column: 1 / -1; }
+    .fiesta-card.large h4 { font-size: 21px; margin-bottom: 9px; }
+    .fiesta-card.large p { font-size: 14px; min-height: 26px; }
+    .fiesta-card.large .fiesta-icon { width: 64px; height: 64px; }
+    .ig { padding: 30px 20px 34px; }
+    .ig .section-title { font-size: 28px; margin-bottom: 9px; }
+    .ig .lead { font-size: 16px; margin-bottom: 18px; }
+    .ig-icon { width: 38px; height: 38px; margin: 3px auto 16px; }
+    .hashtag { font-size: 25px; margin-bottom: 18px; }
     .footer { padding: 30px 18px calc(22px + var(--safe-bottom)); gap: 14px; }
     .footer-names { font-size: 22px; }
     .footer-names .amp { width: 19px !important; height: 19px !important; font-size: 14px !important; vertical-align: 3px !important; }
@@ -675,13 +674,13 @@
     .footer-links { font-size: 14px; gap: 6px; }
     .footer-links a { font-size: 14px; }
     .credit { font-size: 12px; margin-top: 14px; padding-top: 12px; }
-    .modal { width: calc(100vw - 24px); max-width: 100%; padding: 26px 20px 20px; }
-    .modal h3 { font-size: 22px; margin-bottom: 5px; }
+    .modal { width: calc(100vw - 24px); max-width: 100%; padding: 30px 22px 22px; }
+    .modal h3 { font-size: 24px; margin-bottom: 6px; }
     .modal-sub { font-size: 13px; }
-    .modal-icon { width: 70px; height: 70px; margin-bottom: 8px; }
-    .modal .divider { margin: 5px auto 12px; }
-    .modal-field { padding: 10px 12px; margin-bottom: 10px; }
-    .modal-row { gap: 8px; flex-wrap: wrap; }
+    .modal-icon { width: 78px; height: 78px; margin-bottom: 10px; }
+    .modal .divider { margin: 6px auto 14px; }
+    .modal-field { padding: 12px 14px; margin-bottom: 11px; }
+    .modal-row { gap: 9px; flex-wrap: wrap; }
   }
 
   .confirm, .events, .gallery-wrap, .fiesta-intro, .ig {

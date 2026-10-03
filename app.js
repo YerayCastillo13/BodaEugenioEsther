@@ -291,7 +291,7 @@
       var abs = Math.abs(order);
       if (abs > 2) { slide.style.display = "none"; return; }
       slide.style.display = "";
-      var translate = order * 95;
+      var translate = order * 118;
       var scale = order === 0 ? 1.1 : 0.78;
       var opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : 0.4;
       slide.style.zIndex = 10 - abs;
@@ -703,6 +703,10 @@
       min: document.querySelector('[data-unit="min"]'),
       seg: document.querySelector('[data-unit="seg"]')
     };
+    var heart = $(".heart-pulse");
+    var lastSeconds = null;
+    var beatTimer = null;
+
     function tick() {
       var diff = Math.max(0, CONFIG.weddingDate.getTime() - Date.now());
       var seconds = Math.floor(diff / 1000) % 60;
@@ -713,6 +717,15 @@
       if (els.hs) els.hs.textContent = pad(hours);
       if (els.min) els.min.textContent = pad(minutes);
       if (els.seg) els.seg.textContent = pad(seconds);
+
+      // El corazón late exactamente cuando cambia el dígito de segundos del
+      // countdown (no en un ciclo CSS arbitrario), así va "acorde a los segundos".
+      if (heart && seconds !== lastSeconds) {
+        lastSeconds = seconds;
+        heart.classList.add("beat");
+        clearTimeout(beatTimer);
+        beatTimer = setTimeout(function () { heart.classList.remove("beat"); }, 150);
+      }
     }
     tick();
     setInterval(tick, 1000);
@@ -782,13 +795,30 @@
      la animación "risefromDepth" / "scaleInDepth" definida en CSS. Las cards
      dentro de una misma sección se escalonan con un pequeño delay para que no
      entren todas a la vez (sensación de capas, no de bloque plano). */
+  // Marca el elemento como "asentado" en cuanto termina su animación de
+  // entrada CSS, limpiando el animationDelay del stagger. A partir de ahí,
+  // startCardTilt puede tomar el control de su transform sin pisar la
+  // animación de aparición (evita el choque transform-CSS vs transform-JS).
+  function markSettledOnEnd(el) {
+    function onEnd(e) {
+      if (e.target !== el) return;
+      el.classList.add("pxy-settled");
+      el.style.animationDelay = "";
+      el.removeEventListener("animationend", onEnd);
+    }
+    el.addEventListener("animationend", onEnd);
+  }
+
   function startScrollReveal() {
     var sections = $all(".pxy");
     var cardGroups = $all(".events, .fiesta-grid"); // contenedores de cards a escalonar
+    var parallaxSections = $all(".gallery-wrap, .fiesta-intro, .ig");
+
+    parallaxSections.forEach(markSettledOnEnd);
 
     if (!("IntersectionObserver" in window)) {
-      sections.forEach(function (t) { t.classList.add("animate-in"); });
-      $all(".event-card, .fiesta-card").forEach(function (t) { t.classList.add("animate-in"); });
+      sections.forEach(function (t) { t.classList.add("animate-in"); t.classList.add("pxy-settled"); });
+      $all(".event-card, .fiesta-card").forEach(function (t) { t.classList.add("animate-in"); t.classList.add("pxy-settled"); });
       return;
     }
 
@@ -809,6 +839,7 @@
           cards.forEach(function (card, i) {
             card.style.animationDelay = (i * 0.12) + "s";
             card.classList.add("animate-in");
+            markSettledOnEnd(card);
           });
           cardObserver.unobserve(entry.target);
         }
@@ -820,6 +851,7 @@
     // así que necesitan su propio observer para el efecto scaleInDepth.
     var loneCards = $all("#eventCard, #confirmCard");
     loneCards.forEach(function (card) {
+      markSettledOnEnd(card);
       var obs = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
@@ -833,25 +865,47 @@
   }
 
   /* ---------- Micro-interacción de elevación en cards al centrarse (ligera, con throttle) ---------- */
+  /* ---------- Parallax de scroll en cards y secciones (tras su entrada) ----------
+     Cada card/sección sigue entrando con su animación CSS (risefromDepth /
+     scaleInDepth) definida en startScrollReveal. Una vez esa animación termina
+     (animationend), esta función toma el control del transform y le da un
+     desplazamiento continuo ligado al scroll, a una velocidad propia según su
+     "profundidad" (data-depth), para que el efecto se note de verdad mientras
+     el usuario recorre la página, no solo al aparecer. */
   function startCardTilt() {
-    var cards = $all(".event-card, .fiesta-card");
-    if (!cards.length) return;
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    // profundidad por tipo de elemento: valores más altos = se mueve más
+    var targets = [];
+    function collect() {
+      targets = [];
+      $all(".event-card, .fiesta-card").forEach(function (c) { targets.push({ el: c, depth: 14 }); });
+      $all(".gallery-wrap, .fiesta-intro, .ig").forEach(function (c) { targets.push({ el: c, depth: 20 }); });
+    }
+    collect();
+
     var ticking = false;
     function update() {
       ticking = false;
       var windowH = window.innerHeight;
-      cards.forEach(function (card) {
-        var rect = card.getBoundingClientRect();
+      targets.forEach(function (t) {
+        // Solo aplicamos el parallax a elementos que ya terminaron su entrada
+        // (se marcan con .pxy-settled desde startScrollReveal) para no pisar
+        // la animación de aparición.
+        if (!t.el.classList.contains("pxy-settled")) return;
+        var rect = t.el.getBoundingClientRect();
         var centerY = rect.top + rect.height / 2;
-        var dist = Math.abs(centerY - windowH / 2);
-        var progress = 1 - Math.min(dist / (windowH * 0.8), 1);
-        var translateY = (1 - progress) * 10;
-        card.style.transform = "translateY(" + translateY + "px)";
+        var dist = (centerY - windowH / 2) / windowH; // -0.5..0.5 aprox, con signo
+        var translateY = dist * t.depth * -1;
+        t.el.style.transform = "translateY(" + translateY.toFixed(2) + "px)";
       });
     }
     window.addEventListener("scroll", function () {
       if (!ticking) { ticking = true; requestAnimationFrame(update); }
     }, { passive: true });
+    // Si cambia el DOM (poco probable aquí, pero por seguridad tras build inicial)
+    window.addEventListener("resize", function () { collect(); }, { passive: true });
     update();
   }
 

@@ -1,3 +1,4 @@
+
 /* ============================================================
    Boda de Eugenio & Esther — app.js
    Vanilla JS, sin frameworks. Todo el markup se genera aquí

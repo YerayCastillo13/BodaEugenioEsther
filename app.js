@@ -15,7 +15,7 @@
     iban: "ES12 3456 7890 1234 5678 9012",
     titulares: "Eugenio & Esther",
     instagramTag: "eugenio&esther",
-    photos: ["/images/Foto1.jpeg", "/images/Foto2.jpeg", "/images/Foto3.jpeg"],
+    photos: ["/public/images/Foto1.jpeg", "/public/images/Foto2.jpeg", "/public/images/Foto3.jpeg"],
     mapsQuery: "Vara Restaurante Eventos Illescas",
     mapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses",
     // Fase 3: aquí irá la URL del Google Apps Script Web App
@@ -186,7 +186,7 @@
   function buildHero() {
     var heroPin = el("div", { class: "hero-pin" }, [
       el("div", { class: "hero-bg" }),
-      el("audio", { id: "bgm", src: "/musica/dtmf.mp3", loop: "", preload: "none", style: "display:none" }),
+      el("audio", { id: "bgm", src: " public/musica/dtmf.mp3", loop: "", preload: "none", style: "display:none" }),
       el("button", { class: "music-toggle", id: "musicToggle", "aria-label": "Música", html: ICON.musicCircle() }),
       el("div", { class: "hero-top-ornament", html: ICON.botanicalTop() }),
       el("div", { class: "hero-date", id: "heroDate" }, [

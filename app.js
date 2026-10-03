@@ -296,7 +296,7 @@
       slide.style.zIndex = 10 - abs;
       slide.style.transform = "translateX(" + translate + "px) scale(" + scale + ")";
       slide.style.opacity = opacity;
-      slide.style.boxShadow = order === 0 ? "0 12px 30px rgba(40,30,10,0.25)" : "0 6px 16px rgba(40,30,10,0.18)";
+      //slide.style.boxShadow = order === 0 ? "0 12px 30px rgba(40,30,10,0.25)" : "0 6px 16px rgba(40,30,10,0.18)";
       slide.style.background = order === 0 ? "var(--gold)" : "var(--card)";
     });
     B.$all(".dot", $("#dots")).forEach(function (d, i) { d.classList.toggle("active", i === galleryIdx); });

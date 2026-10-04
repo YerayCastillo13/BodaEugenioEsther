@@ -540,7 +540,7 @@
 
       var acompInput = null, restrInput = null, notasInput = null, acompErr = null;
       if (going) {
-        acompInput = el("input", { class: "modal-field", placeholder: "Nº de acompañantes (opcional)", inputmode: "numeric", autocomplete: "off" });
+        acompInput = el("input", { class: "modal-field", placeholder: "Acompañantes (opcional)", inputmode: "numeric", autocomplete: "off" });
         acompErr = el("div", { class: "field-error" }, ["El número de acompañantes debe ser un número (0, 1, 2...)."]);
         restrInput = el("input", { class: "modal-field", placeholder: "Alergias o restricciones (opcional)", autocomplete: "off" });
         notasInput = el("input", { class: "modal-field", placeholder: "Notas adicionales (opcional)", autocomplete: "off" });

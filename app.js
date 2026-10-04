@@ -805,7 +805,7 @@
         // (* 1.35) para que suba con más fuerza que el propio scroll: esto es
         // lo que crea la sensación de "subir y tapar" en vez de solo deslizar.
         var raw = 1 - (rect.top / windowH);
-        var progress = Math.max(0, Math.min(1, raw * 1.08));
+        var progress = Math.max(0, Math.min(1, raw * 1.35));
         var ease = 1 - Math.pow(1 - progress, 2.2);
 
         // La primera sección (justo tras el hero fijo) recorre casi una
@@ -814,7 +814,7 @@
         // recorrido es más largo y la opacidad sigue la misma curva "ease"
         // (sin multiplicador agresivo) para que la aparición sea gradual,
         // no un salto brusco a mitad de camino.
-        var travel = i === 0 ? windowH * 0.7 : 170;
+        var travel = i === 0 ? windowH * 0.35 : 170;
         var translateY = (1 - ease) * travel;
         var scale = 0.9 + ease * 0.1;
         var opacity = ease;

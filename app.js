@@ -805,16 +805,19 @@
         // (* 1.35) para que suba con más fuerza que el propio scroll: esto es
         // lo que crea la sensación de "subir y tapar" en vez de solo deslizar.
         var raw = 1 - (rect.top / windowH);
-        var progress = Math.max(0, Math.min(1, raw * 1.35));
-        var ease = 1 - Math.pow(1 - progress, 3);
+        var progress = Math.max(0, Math.min(1, raw * 1.08));
+        var ease = 1 - Math.pow(1 - progress, 2.2);
 
         // La primera sección (justo tras el hero fijo) recorre casi una
         // pantalla completa para dar la sensación real de "sube y tapa" el
-        // hero; el resto usa un recorrido amplio pero algo menor.
-        var travel = i === 0 ? windowH * 0.55 : 170;
+        // hero; el resto usa un recorrido amplio pero algo menor. El
+        // recorrido es más largo y la opacidad sigue la misma curva "ease"
+        // (sin multiplicador agresivo) para que la aparición sea gradual,
+        // no un salto brusco a mitad de camino.
+        var travel = i === 0 ? windowH * 0.7 : 170;
         var translateY = (1 - ease) * travel;
         var scale = 0.9 + ease * 0.1;
-        var opacity = Math.min(1, progress * 1.8);
+        var opacity = ease;
         var shadow = ease * 0.3;
 
         sec.style.transform = "translate3d(0," + translateY.toFixed(1) + "px,0) scale(" + scale.toFixed(3) + ")";
@@ -827,12 +830,12 @@
         var cards = B.$all(".event-card, .fiesta-card", group);
         var rect = group.getBoundingClientRect();
         var raw = 1 - (rect.top / windowH);
-        var baseProgress = Math.max(0, Math.min(1, raw * 1.35));
+        var baseProgress = Math.max(0, Math.min(1, raw * 1.08));
         cards.forEach(function (card, i) {
-          var p = Math.max(0, Math.min(1, baseProgress * 1.15 - i * 0.12));
-          var ease = 1 - Math.pow(1 - p, 3);
+          var p = Math.max(0, Math.min(1, baseProgress - i * 0.1));
+          var ease = 1 - Math.pow(1 - p, 2.2);
           card.style.transform = "translate3d(0," + ((1 - ease) * 46).toFixed(1) + "px,0) scale(" + (0.9 + ease * 0.1).toFixed(3) + ")";
-          card.style.opacity = Math.min(1, p * 1.6).toFixed(2);
+          card.style.opacity = ease.toFixed(2);
           if (p > 0.55 && !card.classList.contains("card-in")) card.classList.add("card-in");
         });
       });
@@ -841,10 +844,10 @@
       $all("#eventCard, #confirmCard, #fiestaIntro").forEach(function (card) {
         var rect = card.getBoundingClientRect();
         var raw = 1 - (rect.top / windowH);
-        var p = Math.max(0, Math.min(1, raw * 1.35));
-        var ease = 1 - Math.pow(1 - p, 3);
+        var p = Math.max(0, Math.min(1, raw * 1.08));
+        var ease = 1 - Math.pow(1 - p, 2.2);
         card.style.transform = "translate3d(0," + ((1 - ease) * 46).toFixed(1) + "px,0) scale(" + (0.9 + ease * 0.1).toFixed(3) + ")";
-        card.style.opacity = Math.min(1, p * 1.6).toFixed(2);
+        card.style.opacity = ease.toFixed(2);
         if (p > 0.55 && !card.classList.contains("card-in")) card.classList.add("card-in");
       });
     }

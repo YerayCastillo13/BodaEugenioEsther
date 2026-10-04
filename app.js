@@ -609,7 +609,7 @@
       .then(function () {
         closeModal();
         showToast(going ? "¡Gracias por confirmar! Nos vemos pronto 💛" : "Gracias por avisarnos");
-        openWhatsappFallback(going, state);
+        //openWhatsappFallback(going, state);
       })
       .catch(function () {
         // Si falla el Sheet (p.ej. endpoint aún no configurado), no bloqueamos

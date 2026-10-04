@@ -201,13 +201,6 @@
       ]),
       el("div", { class: "hero-rule" }),
       el("p", { class: "hero-sub", id: "heroSub" }, ["¡Nos casamos!"]),
-      el("div", { class: "quote", id: "heroQuote" }, [
-        el("span", { class: "quote-mark top" }, ["\u201C"]),
-        "El amor no se mide en tiempo,", el("br"),
-        "se mide en los momentos", el("br"),
-        "que decidimos compartir",
-        el("span", { class: "quote-mark bottom" }, ["\u201D"])
-      ]),
       buildCountdownBlock()
     ]);
     return el("section", { class: "hero" }, [heroPin]);
@@ -275,7 +268,7 @@
     var carousel = el("div", { class: "carousel", id: "carousel" }, [track]);
     addSwipe(carousel);
 
-    var section = el("section", { class: "gallery-wrap pxy", id: "gallerySection" }, [
+    var section = el("section", { class: "gallery-wrap", id: "gallerySection" }, [
       carousel,
       dots
     ]);

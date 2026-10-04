@@ -18,7 +18,7 @@
     mapsQuery: "Vara Restaurante Eventos Illescas",
     mapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses",
     // Fase 3: aquí irá la URL del Google Apps Script Web App
-    sheetEndpoint: ""
+    sheetEndpoint: "https://script.google.com/macros/s/AKfycbza0Tm0f3CvQTBfP608TUGvHu31lHLPxjJQ2fr5M56ju7DZ4Lebiz68i2UJhJJYRliVag/exec"
   };
 
   /* ---------- Helpers ---------- */
@@ -519,7 +519,7 @@
   /* ---- Confirmación de asistencia (formulario -> Google Sheet) ---- */
   function buildConfirmModal() {
     var going = null;
-    var state = { nombre: "", acompanante: "", restricciones: "" };
+    var state = { nombre: "", acompanante: "", restricciones: "", notas: "" };
 
     var intro = el("p", { style: "font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold-deep);margin:0 0 18px;font-size:14px" }, ["¿Nos acompañarás en nuestro gran día?"]);
 
@@ -538,12 +538,16 @@
       formArea.appendChild(nombreInput);
       formArea.appendChild(nombreErr);
 
-      var acompInput = null, restrInput = null;
+      var acompInput = null, restrInput = null, notasInput = null, acompErr = null;
       if (going) {
-        acompInput = el("input", { class: "modal-field", placeholder: "Acompañante (opcional)", autocomplete: "off" });
-        restrInput = el("input", { class: "modal-field", placeholder: "Restricciones alimentarias (opcional)", autocomplete: "off" });
+        acompInput = el("input", { class: "modal-field", placeholder: "Nº de acompañantes (opcional)", inputmode: "numeric", autocomplete: "off" });
+        acompErr = el("div", { class: "field-error" }, ["El número de acompañantes debe ser un número (0, 1, 2...)."]);
+        restrInput = el("input", { class: "modal-field", placeholder: "Alergias o restricciones (opcional)", autocomplete: "off" });
+        notasInput = el("input", { class: "modal-field", placeholder: "Notas adicionales (opcional)", autocomplete: "off" });
         formArea.appendChild(acompInput);
+        formArea.appendChild(acompErr);
         formArea.appendChild(restrInput);
+        formArea.appendChild(notasInput);
       }
 
       var submitBtn = el("button", { class: "btn-pill lg", style: "margin-top:6px" }, [going ? "Confirmar" : "Enviar"]);
@@ -560,9 +564,21 @@
         nombreInput.classList.remove("invalid");
         nombreErr.classList.remove("show");
 
+        // Validación: el nº de acompañantes, si se rellena, debe ser numérico
+        // (entero, 0 o positivo) antes de dejar enviar el formulario.
+        var acompRaw = acompInput ? acompInput.value.trim() : "";
+        if (acompRaw && !/^\d+$/.test(acompRaw)) {
+          acompInput.classList.add("invalid");
+          acompErr.classList.add("show");
+          acompInput.focus();
+          return;
+        }
+        if (acompInput) { acompInput.classList.remove("invalid"); acompErr.classList.remove("show"); }
+
         state.nombre = nombre;
-        state.acompanante = acompInput ? acompInput.value.trim() : "";
+        state.acompanante = acompRaw;
         state.restricciones = restrInput ? restrInput.value.trim() : "";
+        state.notas = notasInput ? notasInput.value.trim() : "";
 
         submitRSVP(going, state, submitBtn);
       });
@@ -585,6 +601,7 @@
       nombre: state.nombre,
       acompanante: state.acompanante || "",
       restricciones: state.restricciones || "",
+      notas: state.notas || "",
       fecha: new Date().toISOString()
     };
 
@@ -604,10 +621,10 @@
   }
 
   function openWhatsappFallback(going, state) {
-    var msg = (state.acompanante ? "Somos " : "Soy ") + state.nombre +
-      (state.acompanante ? " y " + state.acompanante : "") +
-      (going ? " Quiero confirmar mi asistencia a vuestra boda 🥳" : " No podré asistir a vuestra boda, ¡os deseo lo mejor! 💛") +
-      (state.restricciones ? " Tengo restricciones alimentarias: " + state.restricciones : "");
+    var msg = (state.acompanante ? "Somos " + (Number(state.acompanante) + 1) : "Soy ") + " " + state.nombre +
+      (going ? ". Quiero confirmar mi asistencia a vuestra boda 🥳" : ". No podré asistir a vuestra boda, ¡os deseo lo mejor! 💛") +
+      (state.restricciones ? " Alergias/restricciones: " + state.restricciones : "") +
+      (state.notas ? " Notas: " + state.notas : "");
     window.open("https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msg), "_blank");
   }
 

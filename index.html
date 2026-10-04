@@ -92,6 +92,12 @@
   .wave svg { display: block; width: 100%; height: 100%; }
 
   .top-ornament { width: 110px; height: 70px; margin: 0 auto 18px; display: block; opacity: 0.95; }
+  /* Transición en degradado (no línea recta) entre hero y la sección siguiente */
+  .section-divider-fade {
+    position: relative;
+    padding: 26px 0 22px;
+    background: linear-gradient(180deg, rgba(250,245,236,0) 0%, rgba(250,245,236,0.55) 45%, var(--white) 100%);
+  }
   .top-ornament-lg { width: 130px; height: 88px; margin: 0 auto 26px; display: block; }
 
   /* ====== Hero ====== */
@@ -211,7 +217,7 @@
     font-family: "Cormorant Garamond", serif;
     font-style: italic; font-weight: 400;
     color: var(--gold-deep);
-    font-size: 24px;
+    font-size: 18px;
     letter-spacing: 0.04em;
     margin: 0;
   }
@@ -402,16 +408,14 @@
   .confirm .lead { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold-deep); font-size: 14px; margin: 0 0 22px; }
 
   /* ====== Gallery ====== */
-  .gallery-wrap { padding: 32px 0 36px; text-align: center; background: var(--white); }
-  .gallery-wrap .section-title { font-size: 26px; margin-bottom: 6px; }
-  .gallery-wrap .lead { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold-deep); font-size: 13px; margin: 0 0 14px; }
+  .gallery-wrap { padding: 0; text-align: center; }
   .camera-icon { width: 36px; height: 36px; color: var(--gold); margin: 0 auto 14px; display: block; animation: bounce 2s ease-in-out infinite; }
   @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-  .carousel { position: relative; height: 230px; margin-bottom: 14px; }
+  .carousel { position: relative; height: 300px; margin-bottom: 14px; }
   .carousel-track { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
   .slide {
     position: absolute;
-    width: 205px; height: 150px;
+    width: 270px; height: 195px;
     background: var(--card);
     overflow: hidden;
     border-radius: 8px;
@@ -619,12 +623,10 @@
     .confirm { padding: 34px 20px 38px; }
     .confirm .section-title { font-size: 29px; letter-spacing: 0.01em; }
     .confirm .lead { font-size: 16px; margin-bottom: 22px; }
-    .gallery-wrap { padding: 38px 0 38px; }
-    .gallery-wrap .section-title { font-size: 32px; margin-bottom: 9px; }
-    .gallery-wrap .lead { font-size: 16px; margin-bottom: 20px; }
+    .gallery-wrap { padding: 0; }
     .camera-icon { width: 42px; height: 42px; margin-bottom: 18px; }
-    .carousel { height: 230px; margin-bottom: 14px; }
-    .slide { width: 205px; height: 150px; }
+    .carousel { height: 300px; margin-bottom: 14px; }
+    .slide { width: 270px; height: 195px; }
     .dots { gap: 8px; margin-top: 8px; }
     .fiesta-outer-card { padding: 30px 18px 26px; }
     .fiesta-outer-card .section-title { font-size: 32px; margin-bottom: 11px; }
@@ -656,14 +658,20 @@
     .modal-row { gap: 9px; flex-wrap: wrap; }
   }
 
-  .confirm, .events, .gallery-wrap, .fiesta-intro {
+  .confirm, .events, .fiesta-intro {
     position: relative;
     z-index: 2;
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 18px;
     margin: 40px 12px;
+  }
+  /* La galería no lleva caja: solo el carrusel flotando sobre el fondo. */
+  .gallery-wrap {
+    position: relative;
+    z-index: 2;
+    margin: 40px 0;
   }
 
   /* spinner pequeño para el botón al enviar */

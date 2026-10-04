@@ -96,10 +96,11 @@
         '</g></svg>';
     },
     sectionDivider: function () {
-      return '<div style="position:relative;background:#fff">' +
-        '<svg viewBox="0 0 440 18" preserveAspectRatio="none" style="display:block;width:100%;height:18px">' +
-        '<path d="M0 0 Q 14 18, 28 6 T 56 6 T 84 6 T 112 6 T 140 6 T 168 6 T 196 6 T 224 6 T 252 6 T 280 6 T 308 6 T 336 6 T 364 6 T 392 6 T 420 6 T 440 6 L 440 18 L 0 18 Z" fill="#fff"/>' +
-        '</svg>' + ICON.botanicalTop("") .replace('viewBox="0 0 240 80"', 'viewBox="0 0 240 80" style="position:absolute;left:50%;transform:translateX(-50%);top:-6px;width:160px;height:60px;pointer-events:none"') +
+      // Degradado suave (en vez de un bloque blanco sólido con borde recto)
+      // para que la transición entre el hero y la siguiente sección se note
+      // como un desvanecido, no como un corte en línea recta.
+      return '<div class="section-divider-fade">' +
+        ICON.botanicalTop("").replace('viewBox="0 0 240 80"', 'viewBox="0 0 240 80" style="position:relative;width:150px;height:56px;pointer-events:none;display:block;margin:0 auto"') +
         '</div>';
     },
     heart: function (cls) {
@@ -200,6 +201,13 @@
       ]),
       el("div", { class: "hero-rule" }),
       el("p", { class: "hero-sub", id: "heroSub" }, ["¡Nos casamos!"]),
+      el("div", { class: "quote", id: "heroQuote" }, [
+        el("span", { class: "quote-mark top" }, ["\u201C"]),
+        "El amor no se mide en tiempo,", el("br"),
+        "se mide en los momentos", el("br"),
+        "que decidimos compartir",
+        el("span", { class: "quote-mark bottom" }, ["\u201D"])
+      ]),
       buildCountdownBlock()
     ]);
     return el("section", { class: "hero" }, [heroPin]);
@@ -283,7 +291,7 @@
       var abs = Math.abs(order);
       if (abs > 2) { slide.style.display = "none"; return; }
       slide.style.display = "";
-      var translate = order * 118;
+      var translate = order * 150;
       var scale = order === 0 ? 1.1 : 0.78;
       var opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : 0.4;
       slide.style.zIndex = 10 - abs;
@@ -735,28 +743,28 @@
       currentY += (targetY - currentY) * 0.12;
       if (Math.abs(targetY - currentY) < 0.05) currentY = targetY;
 
-      // Fondo: capa más lenta y profunda, con leve zoom-out progresivo
-      // (sensación de hundirse en la escena, no solo desplazarse) + oscurecimiento sutil.
-      var limit = 560;
+      // Fondo: capa más lenta y profunda, con zoom-out marcado (sensación de
+      // hundirse en la escena) + oscurecimiento progresivo más notable.
+      var limit = 480;
       var progress = Math.min(currentY / limit, 1);
       var ease = 1 - Math.pow(1 - progress, 3);
-      var factor = 0.18 + (0.24 * (1 - ease));
-      var scale = 1 + progress * 0.06;
+      var factor = 0.3 + (0.35 * (1 - ease));
+      var scale = 1 + progress * 0.18;
       if (bg) {
         bg.style.transform = "translate3d(0," + (currentY * factor) + "px,0) scale(" + scale + ")";
-        bg.style.filter = "brightness(" + (1 - progress * 0.12) + ")";
+        bg.style.filter = "brightness(" + (1 - progress * 0.3) + ")";
       }
 
-      // Capas de texto a distinta velocidad: cuanto más "cerca" del lector,
-      // más rápido se mueve (mayor factor) → sensación real de profundidad.
-      if (ornament) ornament.style.transform = "translate3d(0," + (currentY * 0.02) + "px,0)";
-      if (heroDate) heroDate.style.transform = "translate3d(0," + (currentY * 0.05) + "px,0)";
-      if (heroNames) heroNames.style.transform = "translate3d(0," + (currentY * 0.09) + "px,0)";
-      if (heroSub) heroSub.style.transform = "translate3d(0," + (currentY * 0.04) + "px,0)";
-      if (heroQuote) heroQuote.style.transform = "translate3d(0," + (currentY * 0.015) + "px,0)";
+      // Capas de texto a distinta velocidad, con más desfase entre ellas para
+      // que la profundidad se note con claridad al primer scroll.
+      if (ornament) ornament.style.transform = "translate3d(0," + (currentY * 0.05) + "px,0)";
+      if (heroDate) heroDate.style.transform = "translate3d(0," + (currentY * 0.12) + "px,0)";
+      if (heroNames) heroNames.style.transform = "translate3d(0," + (currentY * 0.22) + "px,0)";
+      if (heroSub) heroSub.style.transform = "translate3d(0," + (currentY * 0.1) + "px,0)";
+      if (heroQuote) heroQuote.style.transform = "translate3d(0," + (currentY * 0.04) + "px,0)";
       if (countdownBlock) {
-        var cdOpacity = Math.max(0, 1 - progress * 1.4);
-        countdownBlock.style.transform = "translate3d(0," + (currentY * 0.07) + "px,0)";
+        var cdOpacity = Math.max(0, 1 - progress * 1.8);
+        countdownBlock.style.transform = "translate3d(0," + (currentY * 0.16) + "px,0)";
         countdownBlock.style.opacity = cdOpacity;
       }
 
@@ -800,14 +808,18 @@
         var progress = Math.max(0, Math.min(1, raw * 1.35));
         var ease = 1 - Math.pow(1 - progress, 3);
 
-        var translateY = (1 - ease) * 90; // sube 90px desde abajo hasta su sitio
-        var scale = 0.94 + ease * 0.06;
+        // La primera sección (justo tras el hero fijo) recorre casi una
+        // pantalla completa para dar la sensación real de "sube y tapa" el
+        // hero; el resto usa un recorrido amplio pero algo menor.
+        var travel = i === 0 ? windowH * 0.55 : 170;
+        var translateY = (1 - ease) * travel;
+        var scale = 0.9 + ease * 0.1;
         var opacity = Math.min(1, progress * 1.8);
-        var shadow = ease * 0.22;
+        var shadow = ease * 0.3;
 
         sec.style.transform = "translate3d(0," + translateY.toFixed(1) + "px,0) scale(" + scale.toFixed(3) + ")";
         sec.style.opacity = opacity.toFixed(2);
-        sec.style.boxShadow = "0 -" + (18 * ease).toFixed(0) + "px " + (40 * ease).toFixed(0) + "px rgba(40,30,10," + shadow.toFixed(2) + ")";
+        sec.style.boxShadow = "0 -" + (26 * ease).toFixed(0) + "px " + (55 * ease).toFixed(0) + "px rgba(40,30,10," + shadow.toFixed(2) + ")";
         sec.style.zIndex = String(10 + i);
       });
       // Las cards dentro de cada grid suben escalonadas, detrás del progreso de su sección.

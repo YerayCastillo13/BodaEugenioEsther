@@ -174,6 +174,17 @@
       buildDivider(),
       buildFooter()
     ]);
+    // Capa de fondo-foto global: fija, independiente del hero, detrás de todo
+    // el documento (.invite incluido). Se inserta ANTES de .invite en el body
+    // para que su z-index negativo la mantenga siempre detrás, visible en
+    // todo momento del scroll (no solo durante los primeros 100vh).
+    document.body.insertBefore(
+      el("div", { class: "bg-photo-layer", id: "bgPhotoLayer" }, [
+        el("div", { class: "hero-bg", id: "heroBg" }),
+        el("div", { class: "bg-photo-fade", id: "bgPhotoFade" })
+      ]),
+      app
+    );
     app.appendChild(invite);
     // El botón de música y el <audio> cuelgan directamente del body (fuera de
     // .invite, que tiene overflow:hidden + transform) para que el botón
@@ -193,7 +204,6 @@
   /* ---------- HERO ---------- */
   function buildHero() {
     var heroPin = el("div", { class: "hero-pin" }, [
-      el("div", { class: "hero-bg" }),
       el("div", { class: "hero-top-ornament", html: ICON.botanicalTop() }),
       el("div", { class: "hero-date", id: "heroDate" }, [
         el("span", { html: ICON.dateFlourish(true) }),
@@ -736,7 +746,8 @@
     var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) return;
 
-    var bg = $(".hero-bg");
+    var bg = $("#heroBg");
+    var fade = $("#bgPhotoFade");
     var ornament = $(".hero-top-ornament");
     var heroDate = $("#heroDate");
     var heroNames = $("#heroNames");
@@ -759,6 +770,9 @@
 
       // Fondo: capa más lenta y profunda, con zoom-out marcado (sensación de
       // hundirse en la escena) + oscurecimiento progresivo más notable.
+      // Este tramo (0–480px) solo gobierna movimiento/escala/brillo, no la
+      // visibilidad: el fondo sigue existiendo más allá, por eso ya no hay
+      // corte duro a blanco al seguir bajando.
       var limit = 480;
       var progress = Math.min(currentY / limit, 1);
       var ease = 1 - Math.pow(1 - progress, 3);
@@ -767,6 +781,19 @@
       if (bg) {
         bg.style.transform = "translate3d(0," + (currentY * factor) + "px,0) scale(" + scale + ")";
         bg.style.filter = "brightness(" + (1 - progress * 0.3) + ")";
+      }
+
+      // Fundido continuo del fondo-foto hacia blanco: arranca al salir del
+      // hero (0.75 × altura de pantalla) y se completa gradualmente a lo
+      // largo de una pantalla más (hasta 1.9 × altura), en vez de cortar en
+      // seco a los 480px. Así la transición hero → contenido se percibe
+      // como un fundido continuo ligado al scroll, no como un salto.
+      if (fade) {
+        var vh = window.innerHeight;
+        var fadeStart = vh * 0.75;
+        var fadeEnd = vh * 1.9;
+        var fadeProgress = Math.max(0, Math.min(1, (currentY - fadeStart) / (fadeEnd - fadeStart)));
+        fade.style.opacity = fadeProgress;
       }
 
       // Capas de texto a distinta velocidad, con más desfase entre ellas para

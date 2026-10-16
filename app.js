@@ -348,7 +348,7 @@
 
   /* ---------- Footer ---------- */
   function buildFooter() {
-    return el("footer", { class: "footer" }, [
+    return el("footer", { class: "footer", id: "footer" }, [
       el("div", { class: "footer-brand" }, [
         el("p", { class: "footer-names" }, ["Eugenio", el("span", { class: "amp" }, ["&"]), "Esther"]),
         el("div", { class: "footer-rule" }),
@@ -609,7 +609,6 @@
       .then(function () {
         closeModal();
         showToast(going ? "¡Gracias por confirmar! Nos vemos pronto 💛" : "Gracias por avisarnos");
-        //openWhatsappFallback(going, state);
       })
       .catch(function () {
         // Si falla el Sheet (p.ej. endpoint aún no configurado), no bloqueamos
@@ -620,6 +619,7 @@
       });
   }
 
+  // (fallback de WhatsApp: solo se usa si falla el guardado en el Sheet)
   function openWhatsappFallback(going, state) {
     var msg = (state.acompanante ? "Somos " + (Number(state.acompanante) + 1) : "Soy ") + " " + state.nombre +
       (going ? ". Quiero confirmar mi asistencia a vuestra boda 🥳" : ". No podré asistir a vuestra boda, ¡os deseo lo mejor! 💛") +
@@ -906,6 +906,114 @@
     }, 500);
   }
 
+  /* ---------- Scroll Spine (línea lateral de progreso + navegación) ----------
+     Un punto por card clave; el relleno dorado sube en cada frame de scroll
+     (mismo patrón rAF que startScrollReveal, sin segundo listener pesado) y
+     se detiene exactamente en la card cuyo centro está más cerca del centro
+     del viewport. Clic/tap en un punto hace scroll suave a esa sección. */
+  var SPINE_SECTIONS = [
+    { id: "eventCard", label: "Ceremonia" },
+    { id: "confirmCard", label: "Confirmar" },
+    { id: "gallerySection", label: "Galería" },
+    { id: "tipsCard", label: "Tips" },
+    { id: "alojCard", label: "Alojamiento" },
+    { id: "footer", label: "Contacto" }
+  ];
+
+  function startScrollSpine() {
+    if (window.innerWidth < 360) return; // demasiado estrecho: no robamos espacio al contenido
+
+    var targets = SPINE_SECTIONS
+      .map(function (s) { return { node: document.getElementById(s.id), label: s.label }; })
+      .filter(function (t) { return !!t.node; });
+    if (targets.length < 2) return;
+
+    var track = el("div", { class: "spine-track" });
+    var fill = el("div", { class: "spine-fill" });
+    var dots = targets.map(function (t) {
+      return el("button", { class: "spine-dot", type: "button", "aria-label": "Ir a " + t.label }, [
+        el("span", { class: "spine-label" }, [t.label])
+      ]);
+    });
+    dots.forEach(function (dot, i) {
+      dot.addEventListener("click", function () {
+        var y = targets[i].node.getBoundingClientRect().top + window.scrollY - 18;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      });
+    });
+
+    var spine = el("div", { class: "scroll-spine", id: "scrollSpine" }, [track, fill].concat(dots));
+    document.body.appendChild(spine);
+
+    function layout() {
+      var n = targets.length;
+      dots.forEach(function (dot, i) {
+        dot.style.top = (n === 1 ? 0 : (i / (n - 1)) * 100) + "%";
+      });
+    }
+    layout();
+
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var activeIdx = -1;
+    var ticking = false;
+
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      var vh = window.innerHeight;
+      var docH = document.documentElement.scrollHeight - vh;
+
+      var firstTop = targets[0].node.getBoundingClientRect().top + y;
+      var lastTop = targets[targets.length - 1].node.getBoundingClientRect().top + y;
+      var span = Math.max(1, lastTop - firstTop);
+
+      var showFrom = firstTop - vh * 0.65;
+      var visible = y > showFrom && y < docH - 30;
+      spine.classList.toggle("visible", visible);
+      if (!visible) return;
+
+      var raw = (y + vh * 0.4 - firstTop) / span;
+      var progress = Math.max(0, Math.min(1, raw));
+      fill.style.height = (progress * 100) + "%";
+
+      var center = y + vh * 0.4;
+      var closest = 0, closestDist = Infinity;
+      targets.forEach(function (t, i) {
+        var r = t.node.getBoundingClientRect();
+        var mid = r.top + y + r.height / 2;
+        var d = Math.abs(mid - center);
+        if (d < closestDist) { closestDist = d; closest = i; }
+      });
+      if (closest !== activeIdx) {
+        activeIdx = closest;
+        dots.forEach(function (d, i) { d.classList.toggle("active", i === closest); });
+      }
+    }
+
+    if (reduceMotion) {
+      // Igual lógica pero sin depender de rAF continuo para evitar movimiento excesivo
+      window.addEventListener("scroll", update, { passive: true });
+    } else {
+      window.addEventListener("scroll", function () {
+        if (!ticking) { ticking = true; requestAnimationFrame(update); }
+      }, { passive: true });
+    }
+    window.addEventListener("resize", function () { layout(); update(); }, { passive: true });
+
+    // Ocultar mientras un modal está abierto, sin tocar la lógica de modales
+    var backdrop = $("#modalBackdrop");
+    if (backdrop && window.MutationObserver) {
+      var mo = new MutationObserver(function () {
+        var open = backdrop.classList.contains("open");
+        spine.style.opacity = open ? "0" : "";
+        spine.style.pointerEvents = open ? "none" : "";
+      });
+      mo.observe(backdrop, { attributes: true, attributeFilter: ["class"] });
+    }
+
+    update();
+  }
+
   /* ---------- Boot loader ----------
      Dura un mínimo de 2.2s (aunque todo cargue antes), para que el corazón
      tenga tiempo de latir un par de veces y dar una primera impresión cuidada
@@ -932,6 +1040,7 @@
     startScrollReveal();
     startCardTilt();
     initMusic();
+    startScrollSpine();
 
     var elapsed = Date.now() - startedAt;
     var remaining = Math.max(0, BOOT_MIN_MS - elapsed);

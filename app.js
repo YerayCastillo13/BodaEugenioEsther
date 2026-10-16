@@ -688,7 +688,7 @@
 (function () {
   "use strict";
   var B = window.__BODA__;
-  var CONFIG = B.CONFIG, $ = B.$, $all = B.$all, pad = B.pad, showToast = B.showToast;
+  var CONFIG = B.CONFIG, $ = B.$, $all = B.$all, el = B.el, pad = B.pad, showToast = B.showToast;
 
   /* ---------- Countdown ---------- */
   function startCountdown() {

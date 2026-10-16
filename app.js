@@ -142,6 +142,10 @@
       return '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">' +
         '<path d="M24 6 C 16 6, 10 12, 10 20 C 10 30, 24 42, 24 42 C 24 42, 38 30, 38 20 C 38 12, 32 6, 24 6 Z" />' +
         '<circle cx="24" cy="20" r="5" /></svg>';
+    },
+    arrowUp: function () {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M12 19 L12 5" /><path d="M5 12 L12 5 L19 12" /></svg>';
     }
   };
 
@@ -688,7 +692,7 @@
 (function () {
   "use strict";
   var B = window.__BODA__;
-  var CONFIG = B.CONFIG, $ = B.$, $all = B.$all, el = B.el, pad = B.pad, showToast = B.showToast;
+  var CONFIG = B.CONFIG, $ = B.$, $all = B.$all, el = B.el, ICON = B.ICON, pad = B.pad, showToast = B.showToast;
 
   /* ---------- Countdown ---------- */
   function startCountdown() {
@@ -916,8 +920,7 @@
     { id: "confirmCard", label: "Confirmar" },
     { id: "gallerySection", label: "Galería" },
     { id: "tipsCard", label: "Tips" },
-    { id: "alojCard", label: "Alojamiento" },
-    { id: "footer", label: "Contacto" }
+    { id: "alojCard", label: "Alojamiento" }
   ];
 
   function startScrollSpine() {
@@ -968,7 +971,7 @@
       var span = Math.max(1, lastTop - firstTop);
 
       var showFrom = firstTop - vh * 0.65;
-      var visible = y > showFrom && y < docH - 30;
+      var visible = y > showFrom && y < docH - 4;
       spine.classList.toggle("visible", visible);
       if (!visible) return;
 
@@ -1014,6 +1017,30 @@
     update();
   }
 
+  /* ---------- Botón "volver arriba" ----------
+     Aparece al abandonar el hero (misma referencia de altura que usa la
+     spine: 100vh) y se oculta en cuanto el scroll vuelve a 0, tanto si
+     llega ahí por el propio botón como por scroll manual. */
+  function initToTopButton() {
+    var btn = el("button", { class: "to-top-btn", id: "toTopBtn", "aria-label": "Volver arriba", html: ICON.arrowUp() });
+    btn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    document.body.appendChild(btn);
+
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var pastHero = window.scrollY > window.innerHeight * 0.9;
+      btn.classList.toggle("visible", pastHero);
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+  }
+
   /* ---------- Boot loader ----------
      Dura un mínimo de 2.2s (aunque todo cargue antes), para que el corazón
      tenga tiempo de latir un par de veces y dar una primera impresión cuidada
@@ -1041,6 +1068,7 @@
     startCardTilt();
     initMusic();
     startScrollSpine();
+    initToTopButton();
 
     var elapsed = Date.now() - startedAt;
     var remaining = Math.max(0, BOOT_MIN_MS - elapsed);

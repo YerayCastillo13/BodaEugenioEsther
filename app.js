@@ -777,14 +777,21 @@
       // movimiento usa una curva de saturación suave (1 - 1/(1+x)) en vez de
       // un corte en seco, para que la desaceleración se note natural.
       var MOVE_CAP = 360;
-      var heroProgress = Math.min(currentY / 480, 1); // solo para el efecto inicial de zoom + aclarado del hero
+      var heroProgress = Math.min(currentY / 480, 1); // rápido: solo para el zoom del fondo y el fundido del countdown
       var ease = 1 - Math.pow(1 - heroProgress, 3);
       var moveRaw = currentY * 0.14;
       var moveY = MOVE_CAP * (1 - 1 / (1 + moveRaw / MOVE_CAP));
       var scale = 1 + heroProgress * 0.18;
+
+      // El aclarado del fondo, en cambio, debe durar hasta el final real del
+      // scroll (no solo los primeros 480px), así que su progreso se calcula
+      // sobre la altura total del documento, recalculada cada frame.
+      var docH = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      var brightnessProgress = Math.min(currentY / docH, 1);
+
       if (bg) {
         bg.style.transform = "translate3d(0," + moveY + "px,0) scale(" + scale + ")";
-        bg.style.filter = "brightness(" + (1 + heroProgress * 0.3) + ")";
+        bg.style.filter = "brightness(" + (1 + brightnessProgress * 0.18) + ")";
       }
 
       // Capas de texto a distinta velocidad, con más desfase entre ellas para
@@ -982,14 +989,13 @@
       ticking = false;
       var y = window.scrollY;
       var vh = window.innerHeight;
-      var docH = document.documentElement.scrollHeight - vh;
 
       var firstTop = targets[0].node.getBoundingClientRect().top + y;
       var lastTop = targets[targets.length - 1].node.getBoundingClientRect().top + y;
       var span = Math.max(1, lastTop - firstTop);
 
       var showFrom = firstTop - vh * 0.65;
-      var visible = y > showFrom && y < docH - 4;
+      var visible = y > showFrom;
       spine.classList.toggle("visible", visible);
       if (!visible) return;
 

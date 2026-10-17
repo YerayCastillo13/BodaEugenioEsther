@@ -777,14 +777,14 @@
       // movimiento usa una curva de saturación suave (1 - 1/(1+x)) en vez de
       // un corte en seco, para que la desaceleración se note natural.
       var MOVE_CAP = 360;
-      var heroProgress = Math.min(currentY / 480, 1); // solo para el efecto inicial de zoom/brillo del hero
+      var heroProgress = Math.min(currentY / 480, 1); // solo para el efecto inicial de zoom + aclarado del hero
       var ease = 1 - Math.pow(1 - heroProgress, 3);
       var moveRaw = currentY * 0.14;
       var moveY = MOVE_CAP * (1 - 1 / (1 + moveRaw / MOVE_CAP));
       var scale = 1 + heroProgress * 0.18;
       if (bg) {
         bg.style.transform = "translate3d(0," + moveY + "px,0) scale(" + scale + ")";
-        bg.style.filter = "brightness(" + (1 - heroProgress * 0.3) + ")";
+        bg.style.filter = "brightness(" + (1 + heroProgress * 0.3) + ")";
       }
 
       // Capas de texto a distinta velocidad, con más desfase entre ellas para

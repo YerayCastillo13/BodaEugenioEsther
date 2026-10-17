@@ -39,7 +39,9 @@
   body {
     font-family: "Quattrocento", "Cormorant Garamond", serif;
     color: var(--ink);
-    background: #e6e1d8;
+    /* Sin background propio: tapaba la capa fija .bg-photo-layer por el
+       mismo motivo que .stage (ver comentario arriba). El color de
+       respaldo mientras carga la imagen vive en .bg-photo-layer. */
     line-height: 1.55;
     font-size: 15px;
   }
@@ -65,7 +67,10 @@
 
   .stage {
     min-height: 100vh;
-    background: linear-gradient(180deg, #e6e1d8 0%, #ddd6c9 100%);
+    /* Sin fondo propio: .stage no tiene position (es un elemento normal del
+       flujo), así que cualquier background aquí se pintaría por encima de
+       la capa fija .bg-photo-layer (z-index: -2) y la taparía por completo
+       en todo el ancho del viewport, no solo fuera de .invite. */
     padding: 28px 0;
     display: flex;
     justify-content: center;

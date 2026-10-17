@@ -39,9 +39,7 @@
   body {
     font-family: "Quattrocento", "Cormorant Garamond", serif;
     color: var(--ink);
-    /* Sin background propio: taparía la capa fija .bg-photo-layer (z-index:
-       -2) por el mismo motivo que .stage. El color de respaldo mientras
-       carga la foto vive en .bg-photo-layer (var(--paper)). */
+    background: #e6e1d8;
     line-height: 1.55;
     font-size: 15px;
   }
@@ -67,11 +65,7 @@
 
   .stage {
     min-height: 100vh;
-    /* Sin fondo propio: .stage es un elemento normal del flujo (sin
-       position), así que cualquier background aquí se pintaría por encima
-       de la capa fija .bg-photo-layer (z-index: -2) y la taparía por
-       completo. Dejamos pasar la foto; .invite sigue siendo blanco sólido
-       para que el contenido se lea bien. */
+    background: linear-gradient(180deg, #e6e1d8 0%, #ddd6c9 100%);
     padding: 28px 0;
     display: flex;
     justify-content: center;
@@ -98,9 +92,9 @@
   .wave svg { display: block; width: 100%; height: 100%; }
 
   .top-ornament { width: 110px; height: 70px; margin: 0 auto 18px; display: block; opacity: 0.95; }
-  /* El divider ya no lleva degradado propio hacia blanco: el fundido real lo
-     hace #bgPhotoFade (controlado por JS, frame a frame) por detrás de toda
-     la zona superior, así que aquí solo queda el ornamento centrado. */
+  /* Transición directa hero → .invite (blanco sólido), sin degradado propio:
+     la foto solo vive detrás del hero; el resto de la tarjeta vuelve a ser
+     contenido blanco sólido como en el diseño original. */
   .section-divider-fade {
     position: relative;
     z-index: 1;
@@ -108,17 +102,17 @@
   }
   .top-ornament-lg { width: 130px; height: 88px; margin: 0 auto 26px; display: block; }
 
-  /* ====== Fondo foto global ======
-     Ya no vive "dentro" del hero: es una capa fija independiente que cubre
-     TODO el viewport desde el primer frame y permanece detrás de todo el
-     documento (no solo detrás de los primeros 100vh). Esto es lo que evita
-     el corte duro a blanco al hacer scroll: en vez de que la foto "termine"
-     físicamente a los 100vh, sigue ahí debajo y es la OPACIDAD de las
-     secciones blancas (controlada por JS en cada frame) la que la va
-     tapando progresivamente a medida que se avanza. */
+  /* ====== Fondo foto, encajado al ancho de la tarjeta (.invite) ======
+     Fija al viewport en vertical (sigue el scroll con parallax, como antes),
+     pero su ancho y posición horizontal quedan clavados a los mismos 440px
+     centrados que .invite — ya no cubre todo el viewport del navegador de
+     escritorio. Va detrás de .hero-pin (z-index -2 vs -1). */
   .bg-photo-layer {
     position: fixed;
-    inset: 0;
+    top: 0; left: 50%;
+    width: min(440px, calc(100vw - 16px));
+    height: 100vh;
+    transform: translateX(-50%);
     z-index: -2;
     overflow: hidden;
     pointer-events: none;
@@ -126,14 +120,17 @@
   }
   .bg-photo-layer .hero-bg {
     position: absolute;
-    inset: -140px -20px -20px -20px;
-    background-image:
+    /* Margen vertical generoso (400px arriba/abajo): el parallax en JS
+       desplaza esta capa como máximo ~312px (ver startParallax, limit=480),
+       así que este inset deja siempre un sobrante amplio y la imagen nunca
+       muestra su borde real, ni arriba ni abajo, por mucho scroll que haya. */
+    inset: -400px -20px -400px -20px;
+    background:
+      radial-gradient(circle at 20% 12%, rgba(213, 177, 94, 0.10), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(213, 177, 94, 0.08), transparent 45%),
       linear-gradient(rgb(250 245 236 / 78%), rgb(250 245 236 / 86%)),
-      url(/public/images/prueba_HeroBG.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    will-change: transform, opacity, filter;
+      url(/public/images/prueba_HeroBG.jpg) center center / cover no-repeat;
+    will-change: transform, filter;
   }
   .bg-photo-layer::after {
     content: "";
@@ -143,15 +140,6 @@
     pointer-events: none;
     mix-blend-mode: multiply;
   }
-  /* Overlay de fundido a blanco: su opacidad la fija JS en cada frame según
-     el scroll total, así la foto se desvanece de forma continua hacia el
-     blanco de .invite en vez de cortar en seco en un punto fijo. */
-  .bg-photo-fade {
-    position: absolute; inset: 0;
-    background: var(--white);
-    opacity: 0;
-    pointer-events: none;
-  }
 
   /* ====== Hero ====== */
   .hero { position: relative; height: 100vh; }
@@ -159,9 +147,10 @@
     padding: calc(20px + var(--safe-top)) 36px 0px;
     text-align: center;
     position: fixed;
-    top: 0; left: 0;
-    width: 100%;
+    top: 0; left: 50%;
+    width: min(440px, calc(100vw - 16px));
     height: 100vh;
+    transform: translateX(-50%);
     z-index: -1;
     display: flex;
     flex-direction: column;

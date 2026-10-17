@@ -180,8 +180,7 @@
     // todo momento del scroll (no solo durante los primeros 100vh).
     document.body.insertBefore(
       el("div", { class: "bg-photo-layer", id: "bgPhotoLayer" }, [
-        el("div", { class: "hero-bg", id: "heroBg" }),
-        el("div", { class: "bg-photo-fade", id: "bgPhotoFade" })
+        el("div", { class: "hero-bg", id: "heroBg" })
       ]),
       app
     );
@@ -747,7 +746,6 @@
     if (reduceMotion) return;
 
     var bg = $("#heroBg");
-    var fade = $("#bgPhotoFade");
     var ornament = $(".hero-top-ornament");
     var heroDate = $("#heroDate");
     var heroNames = $("#heroNames");
@@ -770,30 +768,19 @@
 
       // Fondo: capa más lenta y profunda, con zoom-out marcado (sensación de
       // hundirse en la escena) + oscurecimiento progresivo más notable.
-      // Este tramo (0–480px) solo gobierna movimiento/escala/brillo, no la
-      // visibilidad: el fondo sigue existiendo más allá, por eso ya no hay
-      // corte duro a blanco al seguir bajando.
+      // El desplazamiento se calcula SIEMPRE sobre un tramo acotado (0–480px
+      // de scroll), nunca sobre currentY directamente: así, por mucho que se
+      // siga bajando por el resto de la web, el fondo deja de moverse al
+      // llegar a progress=1 y nunca se desplaza más allá del inset generoso
+      // de .hero-bg — por eso nunca deja ver un hueco en su borde superior.
       var limit = 480;
       var progress = Math.min(currentY / limit, 1);
       var ease = 1 - Math.pow(1 - progress, 3);
-      var factor = 0.3 + (0.35 * (1 - ease));
+      var moveY = Math.min(currentY, limit) * (0.3 + (0.35 * (1 - ease)));
       var scale = 1 + progress * 0.18;
       if (bg) {
-        bg.style.transform = "translate3d(0," + (currentY * factor) + "px,0) scale(" + scale + ")";
+        bg.style.transform = "translate3d(0," + moveY + "px,0) scale(" + scale + ")";
         bg.style.filter = "brightness(" + (1 - progress * 0.3) + ")";
-      }
-
-      // Fundido continuo del fondo-foto hacia blanco: arranca al salir del
-      // hero (0.75 × altura de pantalla) y se completa gradualmente a lo
-      // largo de una pantalla más (hasta 1.9 × altura), en vez de cortar en
-      // seco a los 480px. Así la transición hero → contenido se percibe
-      // como un fundido continuo ligado al scroll, no como un salto.
-      if (fade) {
-        var vh = window.innerHeight;
-        var fadeStart = vh * 0.75;
-        var fadeEnd = vh * 1.9;
-        var fadeProgress = Math.max(0, Math.min(1, (currentY - fadeStart) / (fadeEnd - fadeStart)));
-        fade.style.opacity = fadeProgress;
       }
 
       // Capas de texto a distinta velocidad, con más desfase entre ellas para

@@ -73,7 +73,10 @@
   .invite {
     width: 440px;
     max-width: calc(100vw - 16px);
-    background: var(--white);
+    /* Sin fondo propio: deja ver .bg-photo-layer (fija, detrás, clavada al
+       mismo ancho) en toda la altura de la tarjeta. Cada sección de
+       contenido lleva su propio fondo blanco semitransparente + blur para
+       que el texto se siga leyendo bien sobre la foto. */
     box-shadow: 0 20px 60px rgba(60, 45, 20, 0.18), 0 4px 12px rgba(60, 45, 20, 0.08);
     overflow: hidden;
     position: relative;
@@ -84,9 +87,11 @@
     position: relative;
     padding: 32px 36px 36px;
     text-align: center;
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
-  section.block.cream { background: var(--paper); }
+  section.block.cream { background: rgba(239, 231, 214, 0.86); }
 
   .wave { display: block; width: 100%; height: 14px; }
   .wave svg { display: block; width: 100%; height: 100%; }
@@ -120,11 +125,12 @@
   }
   .bg-photo-layer .hero-bg {
     position: absolute;
-    /* Margen vertical generoso (400px arriba/abajo): el parallax en JS
-       desplaza esta capa como máximo ~312px (ver startParallax, limit=480),
-       así que este inset deja siempre un sobrante amplio y la imagen nunca
-       muestra su borde real, ni arriba ni abajo, por mucho scroll que haya. */
-    inset: -400px -20px -400px -20px;
+    /* Margen vertical (420px arriba/abajo): el parallax en JS desplaza esta
+       capa con una curva de saturación que se acerca a MOVE_CAP=360px sin
+       llegar a tocarlo nunca del todo (asíntota), así que este inset deja
+       siempre un sobrante y la imagen nunca muestra su borde real, ni
+       arriba ni abajo, por mucho scroll que haya en TODA la tarjeta. */
+    inset: -420px -20px -420px -20px;
     background:
       radial-gradient(circle at 20% 12%, rgba(213, 177, 94, 0.10), transparent 40%),
       radial-gradient(circle at 80% 90%, rgba(213, 177, 94, 0.08), transparent 45%),
@@ -369,7 +375,9 @@
     grid-template-columns: 1fr 1fr;
     gap: 14px;
     padding: 60px 22px 60px;
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
   .event-card {
     background: var(--card);
@@ -456,8 +464,8 @@
   /* ====== Fiesta ====== */
   .fiesta-intro { text-align: center; }
   /* Card grande que envuelve título + las dos subcards de Tips/Alojamiento */
-  .fiesta-outer-card { padding: 32px 26px 28px; background: var(--paper); }
-  .fiesta-outer-card .fiesta-card { background: var(--white); }
+  .fiesta-outer-card { padding: 32px 26px 28px; background: rgba(239, 231, 214, 0.86); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .fiesta-outer-card .fiesta-card { background: rgba(255, 255, 255, 0.82); }
   .fiesta-outer-card .section-title { font-size: 28px; margin-bottom: 6px; }
   .fiesta-outer-card .lead { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold-deep); font-size: 13px; margin: 0 auto; line-height: 1.4; max-width: 320px; }
   .fiesta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 22px 0 0; }
@@ -484,7 +492,7 @@
 
 
   /* ====== Footer ====== */
-  .footer { padding: 56px 28px 36px; background: var(--white); display: grid; gap: 20px; align-items: start; text-align: left; }
+  .footer { padding: 56px 28px 36px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: grid; gap: 20px; align-items: start; text-align: left; }
   .footer-brand { text-align: left; }
   .footer-names { font-family: "Cormorant Infant", serif; font-weight: 500; font-size: 22px; color: var(--ink); line-height: 1.1; margin: 0; }
   .footer-names .amp { width: 20px; height: 20px; font-size: 14px; vertical-align: 4px; }

@@ -766,21 +766,25 @@
       currentY += (targetY - currentY) * 0.12;
       if (Math.abs(targetY - currentY) < 0.05) currentY = targetY;
 
-      // Fondo: capa más lenta y profunda, con zoom-out marcado (sensación de
-      // hundirse en la escena) + oscurecimiento progresivo más notable.
-      // El desplazamiento se calcula SIEMPRE sobre un tramo acotado (0–480px
-      // de scroll), nunca sobre currentY directamente: así, por mucho que se
-      // siga bajando por el resto de la web, el fondo deja de moverse al
-      // llegar a progress=1 y nunca se desplaza más allá del inset generoso
-      // de .hero-bg — por eso nunca deja ver un hueco en su borde superior.
-      var limit = 480;
-      var progress = Math.min(currentY / limit, 1);
-      var ease = 1 - Math.pow(1 - progress, 3);
-      var moveY = Math.min(currentY, limit) * (0.3 + (0.35 * (1 - ease)));
-      var scale = 1 + progress * 0.18;
+      // Fondo: ahora vive siempre detrás de TODA la tarjeta (no solo del
+      // hero), así que debe acompañar el scroll completo del documento con
+      // un parallax real y continuo, no solo los primeros 480px.
+      //
+      // MOVE_CAP es el tope absoluto de desplazamiento, por debajo del
+      // margen vertical del inset de #heroBg (ver CSS: 420px): por mucho que
+      // se siga bajando, moveY nunca lo supera, así que la imagen nunca
+      // enseña su borde real ni arriba ni abajo. Dentro de ese tope, el
+      // movimiento usa una curva de saturación suave (1 - 1/(1+x)) en vez de
+      // un corte en seco, para que la desaceleración se note natural.
+      var MOVE_CAP = 360;
+      var heroProgress = Math.min(currentY / 480, 1); // solo para el efecto inicial de zoom/brillo del hero
+      var ease = 1 - Math.pow(1 - heroProgress, 3);
+      var moveRaw = currentY * 0.14;
+      var moveY = MOVE_CAP * (1 - 1 / (1 + moveRaw / MOVE_CAP));
+      var scale = 1 + heroProgress * 0.18;
       if (bg) {
         bg.style.transform = "translate3d(0," + moveY + "px,0) scale(" + scale + ")";
-        bg.style.filter = "brightness(" + (1 - progress * 0.3) + ")";
+        bg.style.filter = "brightness(" + (1 - heroProgress * 0.3) + ")";
       }
 
       // Capas de texto a distinta velocidad, con más desfase entre ellas para
@@ -791,7 +795,7 @@
       if (heroSub) heroSub.style.transform = "translate3d(0," + (currentY * 0.1) + "px,0)";
       if (heroQuote) heroQuote.style.transform = "translate3d(0," + (currentY * 0.04) + "px,0)";
       if (countdownBlock) {
-        var cdOpacity = Math.max(0, 1 - progress * 1.8);
+        var cdOpacity = Math.max(0, 1 - heroProgress * 1.8);
         countdownBlock.style.transform = "translate3d(0," + (currentY * 0.16) + "px,0)";
         countdownBlock.style.opacity = cdOpacity;
       }

@@ -8,16 +8,33 @@
 
 var SHEET_NAME = "Hoja 1";
 
+// Seguridad: setValues() interpreta como FÓRMULA cualquier texto que empiece
+// por = + - @, y el formulario es público. Sin esto, alguien podría escribir
+// p.ej. =IMPORTXML(...) en "Notas" y ejecutarlo en tu hoja. Se antepone un
+// apóstrofo para que se guarde siempre como texto, y se limita la longitud.
+function sanitize(value, maxLen) {
+  var s = String(value || "").trim().substring(0, maxLen || 300);
+  return /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+}
+
 function doPost(e) {
+  // Bloqueo: si dos invitados envían a la vez, ambos podían calcular la misma
+  // "primera fila vacía" y uno pisaba al otro.
+  var lock = LockService.getScriptLock();
   try {
+    lock.waitLock(20000);
     var data = JSON.parse(e.postData.contents);
 
-    var nombre = String(data.nombre || "").trim();
+    var nombre = sanitize(data.nombre, 120);
     var asistencia = data.asiste === "Sí" ? "Aceptada" : "Rechazada";
     var acompanantes = parseAcompanantes(data.acompanante);
-    var alergias = String(data.restricciones || "").trim();
-    var notas = String(data.notas || "").trim();
+    var alergias = sanitize(data.restricciones, 300);
+    var notas = sanitize(data.notas, 500);
     var fecha = new Date();
+
+    if (!nombre) {
+      return jsonResponse({ ok: false, error: "Falta el nombre" });
+    }
 
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     if (!sheet) {
@@ -26,10 +43,13 @@ function doPost(e) {
 
     var targetRow = findFirstEmptyRow(sheet);
     sheet.getRange(targetRow, 1, 1, 6).setValues([[fecha, nombre, asistencia, acompanantes, alergias, notas]]);
+    SpreadsheetApp.flush();
 
     return jsonResponse({ ok: true, row: targetRow });
   } catch (err) {
     return jsonResponse({ ok: false, error: String(err) });
+  } finally {
+    try { lock.releaseLock(); } catch (e2) {}
   }
 }
 
@@ -55,7 +75,7 @@ function findFirstEmptyRow(sheet) {
 function parseAcompanantes(value) {
   if (value === undefined || value === null || value === "") return "";
   var n = Number(value);
-  return isNaN(n) ? "" : n;
+  return (isNaN(n) || n < 0 || n > 20) ? "" : Math.floor(n);
 }
 
 function jsonResponse(obj) {

@@ -9,12 +9,15 @@
 
   /* ---------- Config ---------- */
   var CONFIG = {
-    weddingDate: new Date(2027, 6, 3, 19, 0, 0), // mes 6 = Julio (0-indexado)
+    // Hora fija de Madrid (CEST = UTC+2 en julio). Antes se usaba la zona del
+    // navegador: un invitado en otro país veía otra hora en el contador y en
+    // el evento de calendario.
+    weddingDate: new Date("2027-07-03T19:00:00+02:00"),
     whatsapp: "34685976684",
     iban: "ES12 3456 7890 1234 5678 9012",
     titulares: "Eugenio & Esther",
     instagramTag: "eugenio&esther",
-    photos: ["/public/images/Foto1.jpeg", "/public/images/Foto2.jpeg", "/public/images/Foto3.jpeg"],
+    photos: ["public/images/Foto1.jpeg", "public/images/Foto2.jpeg", "public/images/Foto3.jpeg"],
     mapsQuery: "Vara Restaurante Eventos Illescas",
     mapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses",
     // Fase 3: aquí irá la URL del Google Apps Script Web App
@@ -51,6 +54,8 @@
     if (!t) return;
     t.textContent = msg;
     t.classList.add("show");
+    t.setAttribute("role", "status");
+    t.setAttribute("aria-live", "polite");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2400);
   }
@@ -189,8 +194,8 @@
     // .invite, que tiene overflow:hidden + transform) para que el botón
     // "fixed" quede realmente fijo en la pantalla y nunca se recorte ni
     // quede tapado por las secciones con z-index propio.
-    document.body.appendChild(el("audio", { id: "bgm", src: "/public/musica/dtmf.mp3", loop: "", preload: "none", style: "display:none" }));
-    document.body.appendChild(el("button", { class: "music-toggle", id: "musicToggle", "aria-label": "Música", html: ICON.musicCircle() }));
+    document.body.appendChild(el("audio", { id: "bgm", src: "public/musica/dtmf.mp3", loop: "", preload: "none", style: "display:none" }));
+    document.body.appendChild(el("button", { class: "music-toggle", id: "musicToggle", type: "button", "aria-label": "Activar música", "aria-pressed": "false", html: ICON.musicCircle() }));
     app.appendChild(window.__BODA__.modals.buildModalsRoot());
     app.appendChild(window.__BODA__.modals.buildLightboxRoot());
     app.appendChild(el("div", { class: "toast", id: "toast" }));
@@ -223,7 +228,7 @@
     var counters = el("div", { class: "counters", id: "counters" }, ["días", "hs", "min", "seg"].map(function (label) {
       return el("div", { class: "counter" }, [
         el("div", { class: "counter-num", "data-unit": label }, ["00"]),
-        el("div", { class: "counter-label" }, [label])
+        el("div", { class: "counter-label" }, [label === "hs" ? "horas" : label])
       ]);
     }));
     return el("div", { class: "block", id: "countdownBlock", "data-countdown": "", style: "margin-top:10px;padding-top:0;padding-bottom:0" }, [
@@ -243,7 +248,7 @@
       el("p", { class: "event-detail" }, ["Sábado 03 de Julio - 19:00h"]),
       el("p", { class: "event-sub" }, ["Lugar"]),
       el("p", { class: "event-detail" }, ["Vara Restaurante & Eventos", el("br"), "A-42, Km 31, 45200", el("br"), "Illescas", el("br"), "Toledo"]),
-      el("button", { class: "btn-pill", onClick: function () { openModal("map1"); } }, ["¿Cómo llegar?"])
+      el("button", { class: "btn-pill", type: "button", onClick: function () { openModal("map1"); } }, ["¿Cómo llegar?"])
     ]);
     return el("section", { class: "confirm pxy" }, [card]);
   }
@@ -253,33 +258,57 @@
       el("h3", {}, ["Confirmación de asistencia"]),
       el("div", { class: "event-divider", html: ICON.adornoSmall() }),
       el("p", { class: "event-detail" }, ["Es importante que confirmes tu asistencia"]),
-      el("button", { class: "btn-pill lg", onClick: function () { openModal("confirm"); } }, ["Confirmar asistencia"])
+      el("button", { class: "btn-pill lg", type: "button", onClick: function () { openModal("confirm"); } }, ["Confirmar asistencia"])
     ]);
     return el("section", { class: "confirm pxy" }, [card]);
   }
 
   /* ---------- Galería ---------- */
   var galleryIdx = 0, galleryTimer = null;
+  // El autoplay se detiene mientras el usuario mira (hover / foto ampliada) y
+  // no se activa si prefiere movimiento reducido.
+  var galleryPause = { hover: false, lightbox: false };
+  var galleryReduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  function setGalleryPause(key, val) {
+    galleryPause[key] = !!val;
+    restartGalleryAutoplay();
+  }
   function buildGallery() {
     var track = el("div", { class: "carousel-track", id: "carouselTrack" });
     var dots = el("div", { class: "dots", id: "dots" });
 
     CONFIG.photos.forEach(function (src, i) {
-      var slide = el("div", { class: "slide", "data-i": i }, [
-        el("img", { src: src, alt: "", loading: i === 0 ? "eager" : "lazy" })
+      var total = CONFIG.photos.length;
+      var slide = el("div", { class: "slide", "data-i": i, role: "button", tabindex: "0", "aria-label": "Foto " + (i + 1) + " de " + total + ": ampliar" }, [
+        el("img", { src: src, alt: "Foto de Eugenio y Esther (" + (i + 1) + " de " + total + ")", loading: i === 0 ? "eager" : "lazy" })
       ]);
-      slide.addEventListener("click", function () {
-        if (i === galleryIdx) openLightbox(i); else setGalleryIndex(i);
+      function activate() { if (i === galleryIdx) openLightbox(i); else setGalleryIndex(i); }
+      slide.addEventListener("click", activate);
+      slide.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
       });
       track.appendChild(slide);
 
-      var dot = el("button", { class: "dot" + (i === 0 ? " active" : "") });
+      var dot = el("button", { class: "dot" + (i === 0 ? " active" : ""), type: "button", "aria-label": "Ver foto " + (i + 1) });
       dot.addEventListener("click", function () { setGalleryIndex(i); });
       dots.appendChild(dot);
     });
 
-    var carousel = el("div", { class: "carousel", id: "carousel" }, [track]);
+    var carousel = el("div", { class: "carousel", id: "carousel", role: "group", "aria-roledescription": "carrusel", "aria-label": "Fotos de Eugenio y Esther" }, [track]);
     addSwipe(carousel);
+    // Pausa al pasar el ratón/enfocar. Solo con puntero real: en táctil el
+    // "mouseleave" no llega y el carrusel se quedaría parado.
+    if (window.matchMedia && window.matchMedia("(hover: hover)").matches) {
+      carousel.addEventListener("mouseenter", function () { setGalleryPause("hover", true); });
+      carousel.addEventListener("mouseleave", function () { setGalleryPause("hover", false); });
+    }
+    carousel.addEventListener("focusin", function (e) {
+      // solo foco de teclado (un tap en móvil también enfoca y lo dejaría parado)
+      var kb = true;
+      try { kb = e.target.matches(":focus-visible"); } catch (err) {}
+      if (kb) setGalleryPause("hover", true);
+    });
+    carousel.addEventListener("focusout", function () { setGalleryPause("hover", false); });
 
     var section = el("section", { class: "gallery-wrap", id: "gallerySection" }, [
       carousel,
@@ -317,6 +346,7 @@
 
   function restartGalleryAutoplay() {
     clearInterval(galleryTimer);
+    if (galleryReduceMotion || galleryPause.hover || galleryPause.lightbox) return;
     galleryTimer = setInterval(function () { setGalleryIndex(galleryIdx + 1); }, 4500);
   }
 
@@ -368,8 +398,8 @@
         el("p", { class: "footer-sub" }, ["03 de Julio de 2027"])
       ]),
       el("ul", { class: "footer-links" }, [
-        el("li", {}, [el("a", { href: "#", onClick: function (e) { e.preventDefault(); openModal("confirm"); } }, ["Confirmar asistencia"])]),
-        el("li", {}, [el("a", { href: "#", onClick: function (e) { e.preventDefault(); openModal("agenda1"); } }, ["Agendar Ceremonia"])])
+        el("li", {}, [el("button", { type: "button", onClick: function () { openModal("confirm"); } }, ["Confirmar asistencia"])]),
+        el("li", {}, [el("button", { type: "button", onClick: function () { openModal("agenda1"); } }, ["Agendar Ceremonia"])])
       ]),
       el("div", { class: "credit" }, ["Desarrollado con ", el("span", { class: "heart" }, ["\u2665"])])
     ]);
@@ -379,7 +409,8 @@
     buildInvite: buildInvite,
     renderGallery: renderGallery,
     restartGalleryAutoplay: restartGalleryAutoplay,
-    setGalleryIndex: setGalleryIndex
+    setGalleryIndex: setGalleryIndex,
+    setGalleryPause: setGalleryPause
   };
 })();
 
@@ -392,21 +423,28 @@
   var CONFIG = B.CONFIG, $ = B.$, el = B.el, ICON = B.ICON, showToast = B.showToast;
 
   var currentModal = null;
+  var lastFocus = null;   // elemento que abrió el modal, para devolverle el foco
+  var dirtyCheck = null;  // si devuelve true, un toque fuera NO cierra el modal (evita perder lo escrito)
+  var FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
 
   function buildModalsRoot() {
     var backdrop = el("div", { class: "modal-backdrop", id: "modalBackdrop" });
-    backdrop.addEventListener("click", function (e) { if (e.target === backdrop) closeModal(); });
+    backdrop.addEventListener("click", function (e) {
+      if (e.target !== backdrop) return;
+      if (dirtyCheck && dirtyCheck()) return; // hay datos escritos: solo cierra con la ×
+      closeModal();
+    });
     return backdrop;
   }
 
   function modalShell(opts) {
     // opts: { title, icon, body (Node) }
-    var close = el("button", { class: "modal-close", "aria-label": "Cerrar" }, ["\u00D7"]);
+    var close = el("button", { class: "modal-close", type: "button", "aria-label": "Cerrar" }, ["\u00D7"]);
     close.addEventListener("click", closeModal);
-    var modal = el("div", { class: "modal" }, [
+    var modal = el("div", { class: "modal", role: "dialog", "aria-modal": "true", "aria-labelledby": "modalTitle", tabindex: "-1" }, [
       close,
-      el("div", { class: "modal-icon", html: opts.icon }),
-      el("h3", {}, [opts.title]),
+      el("div", { class: "modal-icon", "aria-hidden": "true", html: opts.icon }),
+      el("h3", { id: "modalTitle" }, [opts.title]),
       el("div", { class: "divider", html: ICON.adornoSmall() }),
       opts.body
     ]);
@@ -416,21 +454,44 @@
 
   function openModal(kind) {
     currentModal = kind;
+    dirtyCheck = null;
     var backdrop = $("#modalBackdrop");
     backdrop.innerHTML = "";
     var modal = buildModalByKind(kind);
     if (!modal) return;
+    if (!backdrop.classList.contains("open")) lastFocus = document.activeElement;
     backdrop.appendChild(modal);
     backdrop.classList.add("open");
-    document.addEventListener("keydown", onEscKey);
+    document.body.classList.add("modal-open"); // bloquea el scroll de la página de fondo
+    document.addEventListener("keydown", onModalKey);
+    // Foco al diálogo (no a un campo: en móvil abriría el teclado de golpe)
+    try { modal.focus({ preventScroll: true }); } catch (err) { modal.focus(); }
   }
   function closeModal() {
     var backdrop = $("#modalBackdrop");
     backdrop.classList.remove("open");
+    document.body.classList.remove("modal-open");
     currentModal = null;
-    document.removeEventListener("keydown", onEscKey);
+    dirtyCheck = null;
+    document.removeEventListener("keydown", onModalKey);
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus({ preventScroll: true }); } catch (err) {} }
+    lastFocus = null;
+    // Tras el fundido se vacía el contenido: invisible pero seguía siendo
+    // "tabulable" con el teclado.
+    setTimeout(function () { if (!backdrop.classList.contains("open")) backdrop.innerHTML = ""; }, 350);
   }
-  function onEscKey(e) { if (e.key === "Escape") closeModal(); }
+  function onModalKey(e) {
+    if (e.key === "Escape") { closeModal(); return; }
+    if (e.key !== "Tab") return;
+    // Trampa de foco: Tab/Shift+Tab se quedan dentro del diálogo
+    var modal = $("#modalBackdrop .modal");
+    if (!modal) return;
+    var items = B.$all(FOCUSABLE, modal);
+    if (!items.length) { e.preventDefault(); return; }
+    var first = items[0], last = items[items.length - 1], active = document.activeElement;
+    if (e.shiftKey && (active === first || active === modal)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+  }
 
   function buildModalByKind(kind) {
     if (kind === "confirm") return buildConfirmModal();
@@ -465,8 +526,8 @@
   /* ---- Agenda (.ics) ---- */
   function buildAgendaModal() {
     var row = el("div", { class: "modal-row", style: "flex-direction:column;gap:8px" }, [
-      el("button", { class: "btn-pill", onClick: function () { closeModal(); addToGoogleCalendar(); } }, ["Google Calendar"]),
-      el("button", { class: "btn-pill outline", onClick: function () { closeModal(); downloadIcs(); } }, ["Apple / Outlook (.ics)"])
+      el("button", { class: "btn-pill", type: "button", onClick: function () { closeModal(); addToGoogleCalendar(); } }, ["Google Calendar"]),
+      el("button", { class: "btn-pill outline", type: "button", onClick: function () { closeModal(); downloadIcs(); } }, ["Apple / Outlook (.ics)"])
     ]);
     var p = el("p", { style: "font-family:Quattrocento,serif;font-size:13px;color:var(--ink);line-height:1.6" }, ["Añade el evento a tu calendario:"]);
     return modalShell({ title: "Agendar evento", icon: ICON.rings(), body: el("div", {}, [p, row]) });
@@ -522,9 +583,9 @@
         title: "Mapa Vara Restaurante & Eventos"
       })
     ]);
-    var btn = el("button", { class: "btn-pill" }, ["Ampliar mapa"]);
+    var btn = el("button", { class: "btn-pill", type: "button" }, ["Abrir en Google Maps"]);
     btn.addEventListener("click", function () {
-      window.open("https://maps.google.com/?q=" + encodeURIComponent(CONFIG.mapsQuery), "_blank");
+      window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(CONFIG.mapsQuery), "_blank", "noopener");
     });
     return modalShell({ title: "Vara Restaurante & Eventos", icon: ICON.pin(), body: el("div", {}, [p, mapWrap, btn]) });
   }
@@ -536,37 +597,46 @@
 
     var intro = el("p", { style: "font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold-deep);margin:0 0 18px;font-size:14px" }, ["¿Nos acompañarás en nuestro gran día?"]);
 
-    var btnYes = el("button", { class: "btn-pill outline" }, ["Sí, allí estaré"]);
-    var btnNo = el("button", { class: "btn-pill outline" }, ["No podré asistir"]);
-    var choiceRow = el("div", { class: "modal-row", style: "margin-bottom:18px" }, [btnYes, btnNo]);
+    var btnYes = el("button", { class: "btn-pill outline", type: "button", "aria-pressed": "false" }, ["Sí, allí estaré"]);
+    var btnNo = el("button", { class: "btn-pill outline", type: "button", "aria-pressed": "false" }, ["No podré asistir"]);
+    var choiceRow = el("div", { class: "modal-row", style: "margin-bottom:18px", role: "group", "aria-label": "¿Asistirás?" }, [btnYes, btnNo]);
 
-    var formArea = el("div", { id: "confirmFormArea" });
+    // <form> real: Enter envía desde cualquier campo (antes solo funcionaba el botón)
+    var formArea = el("form", { id: "confirmFormArea", novalidate: "" });
+
+    // Un toque fuera del modal no debe borrar lo que el invitado ya escribió
+    dirtyCheck = function () {
+      return B.$all("input", formArea).some(function (i) { return i.value.trim() !== ""; });
+    };
 
     function renderForm() {
       formArea.innerHTML = "";
+      formArea.onsubmit = null;
       if (going === null) return;
 
-      var nombreInput = el("input", { class: "modal-field", placeholder: "Tu nombre *", id: "fNombre", autocomplete: "name" });
-      var nombreErr = el("div", { class: "field-error" }, ["Por favor, escribe tu nombre."]);
+      var nombreInput = el("input", { class: "modal-field", placeholder: "Tu nombre *", "aria-label": "Tu nombre (obligatorio)", "aria-required": "true", id: "fNombre", name: "nombre", autocomplete: "name", autocapitalize: "words", enterkeyhint: "next" });
+      var nombreErr = el("div", { class: "field-error", role: "alert" }, ["Por favor, escribe tu nombre."]);
       formArea.appendChild(nombreInput);
       formArea.appendChild(nombreErr);
 
       var acompInput = null, restrInput = null, notasInput = null, acompErr = null;
       if (going) {
-        acompInput = el("input", { class: "modal-field", placeholder: "Acompañantes (opcional)", inputmode: "numeric", autocomplete: "off" });
-        acompErr = el("div", { class: "field-error" }, ["El número de acompañantes debe ser un número (0, 1, 2...)."]);
-        restrInput = el("input", { class: "modal-field", placeholder: "Alergias o restricciones (opcional)", autocomplete: "off" });
-        notasInput = el("input", { class: "modal-field", placeholder: "Notas adicionales (opcional)", autocomplete: "off" });
+        acompInput = el("input", { class: "modal-field", placeholder: "Acompañantes (opcional)", "aria-label": "Número de acompañantes (opcional)", name: "acompanantes", inputmode: "numeric", maxlength: "2", autocomplete: "off", enterkeyhint: "next" });
+        acompErr = el("div", { class: "field-error", role: "alert" }, ["El número de acompañantes debe ser un número (0, 1, 2...)."]);
+        restrInput = el("input", { class: "modal-field", placeholder: "Alergias o restricciones (opcional)", "aria-label": "Alergias o restricciones (opcional)", name: "alergias", autocomplete: "off", enterkeyhint: "next" });
+        notasInput = el("input", { class: "modal-field", placeholder: "Notas adicionales (opcional)", "aria-label": "Notas adicionales (opcional)", name: "notas", autocomplete: "off", enterkeyhint: "send" });
         formArea.appendChild(acompInput);
         formArea.appendChild(acompErr);
         formArea.appendChild(restrInput);
         formArea.appendChild(notasInput);
       }
 
-      var submitBtn = el("button", { class: "btn-pill lg", style: "margin-top:6px" }, [going ? "Confirmar" : "Enviar"]);
+      var submitBtn = el("button", { class: "btn-pill lg", type: "submit", style: "margin-top:6px" }, [going ? "Confirmar" : "Enviar"]);
       formArea.appendChild(submitBtn);
 
-      submitBtn.addEventListener("click", function () {
+      formArea.onsubmit = function (e) {
+        e.preventDefault();
+        if (submitBtn.disabled) return; // evita doble envío con Enter
         var nombre = nombreInput.value.trim();
         if (!nombre) {
           nombreInput.classList.add("invalid");
@@ -594,11 +664,22 @@
         state.notas = notasInput ? notasInput.value.trim() : "";
 
         submitRSVP(going, state, submitBtn);
-      });
+      };
     }
 
-    btnYes.addEventListener("click", function () { going = true; btnYes.classList.add("selected"); btnNo.classList.remove("selected"); renderForm(); });
-    btnNo.addEventListener("click", function () { going = false; btnNo.classList.add("selected"); btnYes.classList.remove("selected"); renderForm(); });
+    function choose(yes) {
+      // Al cambiar de opción se conserva el nombre ya escrito
+      var prevName = formArea.querySelector("#fNombre");
+      var keep = prevName ? prevName.value : "";
+      going = yes;
+      btnYes.classList.toggle("selected", yes); btnYes.setAttribute("aria-pressed", String(yes));
+      btnNo.classList.toggle("selected", !yes); btnNo.setAttribute("aria-pressed", String(!yes));
+      renderForm();
+      var n = formArea.querySelector("#fNombre");
+      if (n && keep) n.value = keep;
+    }
+    btnYes.addEventListener("click", function () { choose(true); });
+    btnNo.addEventListener("click", function () { choose(false); });
 
     var body = el("div", {}, [intro, choiceRow, formArea]);
     return modalShell({ title: "Confirmar Asistencia", icon: ICON.heart(), body: body });
@@ -624,61 +705,99 @@
         showToast(going ? "¡Gracias por confirmar! Nos vemos pronto 💛" : "Gracias por avisarnos");
       })
       .catch(function () {
-        // Si falla el Sheet (p.ej. endpoint aún no configurado), no bloqueamos
-        // al invitado: igualmente le dejamos confirmar por WhatsApp.
-        closeModal();
-        showToast("No pudimos guardar automáticamente, te abrimos WhatsApp");
-        openWhatsappFallback(going, state);
+        // Si falla el envío, el modal NO se cierra (así no se pierde lo
+        // escrito) y se ofrece un enlace real a WhatsApp. Antes se abría con
+        // window.open() tras una espera asíncrona, que los móviles suelen
+        // bloquear como popup.
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+        var form = submitBtn.form;
+        if (!form) return;
+        var old = form.querySelector(".form-fallback");
+        if (old) old.remove();
+        var box = el("div", { class: "form-fallback", role: "alert" }, [
+          el("p", {}, ["No hemos podido enviar tu respuesta automáticamente. Puedes volver a intentarlo o enviárnosla por WhatsApp:"]),
+          el("a", { class: "btn-pill outline", href: whatsappUrl(going, state), target: "_blank", rel: "noopener noreferrer" }, ["Confirmar por WhatsApp"])
+        ]);
+        form.appendChild(box);
       });
   }
 
   // (fallback de WhatsApp: solo se usa si falla el guardado en el Sheet)
-  function openWhatsappFallback(going, state) {
-    var msg = (state.acompanante ? "Somos " + (Number(state.acompanante) + 1) : "Soy ") + " " + state.nombre +
+  function whatsappUrl(going, state) {
+    var msg = (state.acompanante ? "Somos " + (Number(state.acompanante) + 1) + ", yo soy " : "Soy ") + state.nombre +
       (going ? ". Quiero confirmar mi asistencia a vuestra boda 🥳" : ". No podré asistir a vuestra boda, ¡os deseo lo mejor! 💛") +
-      (state.restricciones ? " Alergias/restricciones: " + state.restricciones : "") +
+      (state.restricciones ? " Alergias/restricciones: " + state.restricciones + "." : "") +
       (state.notas ? " Notas: " + state.notas : "");
-    window.open("https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msg), "_blank");
+    return "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msg);
   }
 
   function sendToSheet(payload) {
     if (!CONFIG.sheetEndpoint) {
       return Promise.reject(new Error("sheetEndpoint no configurado todavía"));
     }
+    // Timeout de 15s: con mala cobertura el botón se quedaba en "Enviando..." para siempre
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : null;
     return fetch(CONFIG.sheetEndpoint, {
       method: "POST",
       mode: "no-cors", // Apps Script Web Apps no siempre devuelven CORS; con no-cors no podemos leer la respuesta pero sí se guarda
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    }).then(function () { return true; });
+      body: JSON.stringify(payload),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function () { clearTimeout(timer); return true; },
+            function (err) { clearTimeout(timer); throw err; });
   }
 
   /* ---------- Lightbox ---------- */
   var lbIndex = null;
   function buildLightboxRoot() {
-    var box = el("div", { class: "lightbox", id: "lightbox" });
+    var box = el("div", { class: "lightbox", id: "lightbox", role: "dialog", "aria-modal": "true", "aria-label": "Foto ampliada" });
     box.addEventListener("click", function (e) { if (e.target === box) closeLightbox(); });
     return box;
   }
+  var lbLastFocus = null;
   function openLightbox(i) {
+    lbLastFocus = document.activeElement;
     lbIndex = i;
     renderLightbox();
     $("#lightbox").classList.add("open");
+    document.addEventListener("keydown", onLightboxKey);
+    if (B.build && B.build.setGalleryPause) B.build.setGalleryPause("lightbox", true);
+    var c = $("#lightbox .close");
+    if (c) c.focus();
   }
   function closeLightbox() {
     $("#lightbox").classList.remove("open");
     lbIndex = null;
+    document.removeEventListener("keydown", onLightboxKey);
+    if (B.build && B.build.setGalleryPause) B.build.setGalleryPause("lightbox", false);
+    if (lbLastFocus && lbLastFocus.focus) { try { lbLastFocus.focus({ preventScroll: true }); } catch (err) {} }
+    lbLastFocus = null;
+  }
+  function lbStep(d) {
+    lbIndex = (lbIndex + d + CONFIG.photos.length) % CONFIG.photos.length;
+    renderLightbox();
+    var n = $("#lightbox " + (d > 0 ? ".next" : ".prev"));
+    if (n) n.focus();
+  }
+  // Teclado: Esc cierra, \u2190 \u2192 cambian de foto (antes el lightbox solo respond\u00EDa al rat\u00F3n)
+  function onLightboxKey(e) {
+    if (lbIndex === null) return;
+    if (e.key === "Escape") closeLightbox();
+    else if (e.key === "ArrowLeft") lbStep(-1);
+    else if (e.key === "ArrowRight") lbStep(1);
   }
   function renderLightbox() {
     var box = $("#lightbox");
     box.innerHTML = "";
-    var closeBtn = el("button", { class: "close" }, ["\u00D7"]);
+    var closeBtn = el("button", { class: "close", type: "button", "aria-label": "Cerrar foto" }, ["\u00D7"]);
     closeBtn.addEventListener("click", closeLightbox);
-    var prev = el("button", { class: "nav prev" }, ["\u2039"]);
-    prev.addEventListener("click", function (e) { e.stopPropagation(); lbIndex = (lbIndex - 1 + CONFIG.photos.length) % CONFIG.photos.length; renderLightbox(); });
-    var next = el("button", { class: "nav next" }, ["\u203A"]);
-    next.addEventListener("click", function (e) { e.stopPropagation(); lbIndex = (lbIndex + 1) % CONFIG.photos.length; renderLightbox(); });
-    var img = el("img", { src: CONFIG.photos[lbIndex], alt: "" });
+    var prev = el("button", { class: "nav prev", type: "button", "aria-label": "Foto anterior" }, ["\u2039"]);
+    prev.addEventListener("click", function (e) { e.stopPropagation(); lbStep(-1); });
+    var next = el("button", { class: "nav next", type: "button", "aria-label": "Foto siguiente" }, ["\u203A"]);
+    next.addEventListener("click", function (e) { e.stopPropagation(); lbStep(1); });
+    var img = el("img", { src: CONFIG.photos[lbIndex], alt: "Foto de Eugenio y Esther (" + (lbIndex + 1) + " de " + CONFIG.photos.length + ")" });
     img.addEventListener("click", function (e) { e.stopPropagation(); });
     box.appendChild(closeBtn); box.appendChild(prev); box.appendChild(img); box.appendChild(next);
   }
@@ -750,7 +869,8 @@
     var heroDate = $("#heroDate");
     var heroNames = $("#heroNames");
     var heroSub = $("#heroSub");
-    var heroQuote = $("#heroQuote");
+    var firstSec = $(".pxy");
+    var heroQuote = null; // no existe #heroQuote en el markup; se deja nulo a propósito
     var countdownBlock = $("#countdownBlock");
 
     var targetY = 0, currentY = 0;
@@ -796,14 +916,24 @@
 
       // Capas de texto a distinta velocidad, con más desfase entre ellas para
       // que la profundidad se note con claridad al primer scroll.
-      if (ornament) ornament.style.transform = "translate3d(0," + (currentY * 0.05) + "px,0)";
-      if (heroDate) heroDate.style.transform = "translate3d(0," + (currentY * 0.12) + "px,0)";
-      if (heroNames) heroNames.style.transform = "translate3d(0," + (currentY * 0.22) + "px,0)";
+      // Velocidades casi iguales: si difieren mucho, el nombre "adelanta" a la
+      // línea y al subtítulo y se solapan (se veía así al hacer scroll).
+      var heroRule = $(".hero-rule");
+      if (ornament) ornament.style.transform = "translate3d(0," + (currentY * 0.08) + "px,0)";
+      if (heroDate) heroDate.style.transform = "translate3d(0," + (currentY * 0.09) + "px,0)";
+      if (heroNames) heroNames.style.transform = "translate3d(0," + (currentY * 0.1) + "px,0)";
+      if (heroRule) heroRule.style.transform = "translate3d(0," + (currentY * 0.1) + "px,0)";
       if (heroSub) heroSub.style.transform = "translate3d(0," + (currentY * 0.1) + "px,0)";
       if (heroQuote) heroQuote.style.transform = "translate3d(0," + (currentY * 0.04) + "px,0)";
       if (countdownBlock) {
-        var cdOpacity = Math.max(0, 1 - heroProgress * 1.8);
-        countdownBlock.style.transform = "translate3d(0," + (currentY * 0.16) + "px,0)";
+        // El contador se desvanece solo cuando la primera sección sube y lo
+        // cubre (antes se apagaba en ~270px de scroll y dejaba un hueco vacío).
+        var cdOpacity = 1;
+        if (firstSec) {
+          var secRaw = 1 - ((docTop(firstSec) - currentY) / window.innerHeight);
+          cdOpacity = Math.max(0, Math.min(1, 1 - (secRaw - 0.55) / 0.35));
+        }
+        countdownBlock.style.transform = "translate3d(0," + (currentY * 0.1) + "px,0)";
         countdownBlock.style.opacity = cdOpacity;
       }
 
@@ -837,14 +967,16 @@
       ticking = false;
       var windowH = window.innerHeight;
       sections.forEach(function (sec, i) {
-        var rect = sec.getBoundingClientRect();
+        // Posición SIN transformaciones: con getBoundingClientRect la propia
+        // animación (translateY) retrasaba su propia aparición.
+        var rect = { top: docTop(sec) - window.scrollY };
         // progress: 0 cuando el borde superior de la sección está justo en el
         // borde inferior de la pantalla (aún no visible), 1 cuando ha llegado
         // a su posición natural (top del viewport). Se adelanta la entrada
         // (* 1.35) para que suba con más fuerza que el propio scroll: esto es
         // lo que crea la sensación de "subir y tapar" en vez de solo deslizar.
         var raw = 1 - (rect.top / windowH);
-        var progress = Math.max(0, Math.min(1, raw * 1.35));
+        var progress = Math.max(0, Math.min(1, raw * 1.9));
         var ease = 1 - Math.pow(1 - progress, 2.2);
 
         // La primera sección (justo tras el hero fijo) recorre casi una
@@ -856,7 +988,7 @@
         var travel = i === 0 ? windowH * 0.35 : 170;
         var translateY = (1 - ease) * travel;
         var scale = 0.9 + ease * 0.1;
-        var opacity = ease;
+        var opacity = Math.min(1, ease * 2.2); // aparece enseguida, sin esperar a estar casi arriba
         var shadow = ease * 0.3;
 
         sec.style.transform = "translate3d(0," + translateY.toFixed(1) + "px,0) scale(" + scale.toFixed(3) + ")";
@@ -867,9 +999,9 @@
       // Las cards dentro de cada grid suben escalonadas, detrás del progreso de su sección.
       cardGroups.forEach(function (group) {
         var cards = B.$all(".event-card, .fiesta-card", group);
-        var rect = group.getBoundingClientRect();
+        var rect = { top: docTop(group) - window.scrollY };
         var raw = 1 - (rect.top / windowH);
-        var baseProgress = Math.max(0, Math.min(1, raw * 1.08));
+        var baseProgress = Math.max(0, Math.min(1, raw * 1.9));
         cards.forEach(function (card, i) {
           var p = Math.max(0, Math.min(1, baseProgress - i * 0.1));
           var ease = 1 - Math.pow(1 - p, 2.2);
@@ -881,12 +1013,12 @@
       // #eventCard, #confirmCard y #fiestaIntro (cards sueltas dentro de su .pxy,
       // no de .events/.fiesta-grid, así que necesitan animarse aquí explícitamente)
       $all("#eventCard, #confirmCard, #fiestaIntro").forEach(function (card) {
-        var rect = card.getBoundingClientRect();
+        var rect = { top: docTop(card) - window.scrollY };
         var raw = 1 - (rect.top / windowH);
-        var p = Math.max(0, Math.min(1, raw * 1.08));
+        var p = Math.max(0, Math.min(1, raw * 2.2));
         var ease = 1 - Math.pow(1 - p, 2.2);
         card.style.transform = "translate3d(0," + ((1 - ease) * 46).toFixed(1) + "px,0) scale(" + (0.9 + ease * 0.1).toFixed(3) + ")";
-        card.style.opacity = ease.toFixed(2);
+        card.style.opacity = Math.min(1, ease * 2).toFixed(2);
         if (p > 0.55 && !card.classList.contains("card-in")) card.classList.add("card-in");
       });
     }
@@ -908,15 +1040,35 @@
     if (!audio || !btn) return;
     var on = false;
 
+    // Bucle: además del atributo loop, si el navegador/servidor no permite
+    // reposicionar el audio (p.ej. servidor sin soporte Range) y "ended"
+    // llega igualmente, se recarga y se vuelve a reproducir desde el inicio.
+    audio.loop = true;
+    audio.addEventListener("ended", function () {
+      if (!on) return;
+      try { audio.currentTime = 0; } catch (e) {}
+      audio.play().catch(function () {
+        audio.load();
+        audio.play().catch(function () {});
+      });
+    });
+    // Pausar con el botón conserva la posición (pause/play, nunca load/currentTime=0),
+    // así que al volver a pulsar continúa por donde iba.
+
+    function syncBtn() {
+      btn.classList.toggle("playing", on);
+      btn.setAttribute("aria-pressed", String(on));
+      btn.setAttribute("aria-label", on ? "Pausar música" : "Activar música");
+    }
     function setOn(v) {
       on = v;
-      btn.classList.toggle("playing", on);
+      syncBtn();
       if (on) {
         audio.play().then(function () {
           showToast("🎵 Música activada");
         }).catch(function () {
           on = false;
-          btn.classList.remove("playing");
+          syncBtn();
           showToast("Pulsa el botón para reproducir la música");
         });
       } else {
@@ -931,7 +1083,7 @@
     // lo bloquean sin interacción previa, así que fallamos en silencio
     // (sin molestar con un toast de error en la primera carga).
     setTimeout(function () {
-      audio.play().then(function () { on = true; btn.classList.add("playing"); }).catch(function () {});
+      audio.play().then(function () { on = true; syncBtn(); }).catch(function () {});
     }, 500);
   }
 
@@ -944,9 +1096,17 @@
     { id: "eventCard", label: "Ceremonia" },
     { id: "confirmCard", label: "Confirmar" },
     { id: "gallerySection", label: "Galería" },
-    { id: "tipsCard", label: "Tips" },
-    { id: "alojCard", label: "Alojamiento" }
+    { id: "fiestaIntro", label: "Toma nota" }
   ];
+
+  // Posición real en el documento SIN transformaciones. getBoundingClientRect()
+  // incluye el translateY/scale de la animación de entrada, así que las cards
+  // aún sin revelar daban una posición falsa y el clic llevaba al sitio erróneo.
+  function docTop(node) {
+    var top = 0;
+    while (node) { top += node.offsetTop; node = node.offsetParent; }
+    return top;
+  }
 
   function startScrollSpine() {
     if (window.innerWidth < 360) return; // demasiado estrecho: no robamos espacio al contenido
@@ -956,6 +1116,7 @@
       .filter(function (t) { return !!t.node; });
     if (targets.length < 2) return;
 
+    var reduceMotionNav = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     var track = el("div", { class: "spine-track" });
     var fill = el("div", { class: "spine-fill" });
     var dots = targets.map(function (t) {
@@ -965,8 +1126,10 @@
     });
     dots.forEach(function (dot, i) {
       dot.addEventListener("click", function () {
-        var y = targets[i].node.getBoundingClientRect().top + window.scrollY - 18;
-        window.scrollTo({ top: y, behavior: "smooth" });
+        var node = targets[i].node, vh = window.innerHeight, h = node.offsetHeight;
+        // centra la card en pantalla; si es más alta que la pantalla, alinea su borde superior
+        var y = h < vh - 36 ? docTop(node) - (vh - h) / 2 : docTop(node) - 18;
+        window.scrollTo({ top: Math.max(0, y), behavior: reduceMotionNav ? "auto" : "smooth" });
       });
     });
 
@@ -990,8 +1153,8 @@
       var y = window.scrollY;
       var vh = window.innerHeight;
 
-      var firstTop = targets[0].node.getBoundingClientRect().top + y;
-      var lastTop = targets[targets.length - 1].node.getBoundingClientRect().top + y;
+      var firstTop = docTop(targets[0].node);
+      var lastTop = docTop(targets[targets.length - 1].node);
       var span = Math.max(1, lastTop - firstTop);
 
       var showFrom = firstTop - vh * 0.65;
@@ -1006,8 +1169,7 @@
       var center = y + vh * 0.4;
       var closest = 0, closestDist = Infinity;
       targets.forEach(function (t, i) {
-        var r = t.node.getBoundingClientRect();
-        var mid = r.top + y + r.height / 2;
+        var mid = docTop(t.node) + t.node.offsetHeight / 2;
         var d = Math.abs(mid - center);
         if (d < closestDist) { closestDist = d; closest = i; }
       });
@@ -1070,7 +1232,7 @@
      tenga tiempo de latir un par de veces y dar una primera impresión cuidada
      en vez de parpadear. Al ocultarse, dispara la entrada sutil de la
      invitación desde arriba (.page-in). */
-  var BOOT_MIN_MS = 2200;
+  var BOOT_MIN_MS = 1400; // antes 2200: una espera artificial larga frustra, sobre todo en móvil
   function hideBootLoader() {
     var loader = document.getElementById("boot-loader");
     var invite = $(".invite");

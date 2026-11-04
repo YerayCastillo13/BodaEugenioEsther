@@ -5,37 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Boda de Eugenio &amp; Esther</title>
 <meta name="description" content="Invitación a la boda de Eugenio &amp; Esther — 03 de Julio de 2027">
+<meta name="theme-color" content="#faf5ec">
+
+<!-- Vista previa al compartir el enlace por WhatsApp/Telegram/etc.
+     TODO: para que salga también la foto, añade og:image con la URL ABSOLUTA
+     de la imagen una vez conozcas el dominio final, p.ej.
+     <meta property="og:image" content="https://TU-DOMINIO/public/images/Foto1.jpeg"> -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="Boda de Eugenio &amp; Esther">
+<meta property="og:description" content="¡Nos casamos! 03 de Julio de 2027 · Vara Restaurante &amp; Eventos, Illescas (Toledo). Confirma tu asistencia aquí.">
 
 <!-- Preconnect para fuentes: arrancan a resolver DNS/TLS en paralelo -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <!-- Preload de la imagen de fondo del hero: es lo primero que ve el invitado -->
-<link rel="preload" as="image" href="/public/images/prueba_HeroBG.jpg">
+<link rel="preload" as="image" href="public/images/prueba_HeroBG.jpg">
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Infant:ital,wght@0,400;0,500;0,600;1,400&family=Quattrocento:wght@400;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="/public/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" href="public/favicon/favicon-32x32.png">
 
 <style>
   :root {
     --gold: #d5b15e;
     --gold-soft: #e0c179;
-    --gold-deep: #b4933f;
+    --gold-deep: #8a6e22; /* oscurecido: el anterior (#b4933f) daba ~3:1 sobre blanco; este ≥4.5:1 */
     --ink: #4a4641;
     --ink-soft: #6e6862;
     --cream: #f6f1e9;
     --cream-deep: #efe7d6;
-    --card: #ececec;
-    --card-soft: #ececec6e;
-    --card-deep: #e2e2e2;
+    /* Paleta "oro antiguo": el dorado claro (--gold) queda para ornamentos y
+       detalles; los botones y pastillas con texto blanco usan un oro más
+       profundo (--btn) para que el blanco se lea bien. */
+    --btn: #9a7a2e;
+    --btn-hover: #7d6122;
+    /* Cards blancas con filo dorado fino y sombra suave (sin gris ni beige) */
+    --card: #ffffff;
+    --card-soft: rgba(255, 255, 255, 0.72);
+    --card-deep: #e4d9bf;
+    --card-line: rgba(201, 164, 92, 0.45);
     --paper: #faf5ec;
     --white: #ffffff;
-    --shadow-card: 0 1px 2px rgba(40, 30, 10, 0.04), 0 6px 18px rgba(60, 45, 15, 0.05);
+    --shadow-card: 0 1px 2px rgba(40, 30, 10, 0.06), 0 8px 24px rgba(60, 45, 15, 0.10);
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
   * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
   html, body { margin: 0; padding: 0; }
+  /* Foco visible para quien navega con teclado (antes no había ninguno) */
+  :focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 3px; }
+  .modal-field:focus-visible { outline: none; } /* ya tiene su propio borde dorado */
+  body.modal-open { overflow: hidden; }
   body {
     font-family: "Quattrocento", "Cormorant Garamond", serif;
     color: var(--ink);
@@ -140,7 +161,7 @@
       radial-gradient(circle at 20% 12%, rgba(213, 177, 94, 0.10), transparent 40%),
       radial-gradient(circle at 80% 90%, rgba(213, 177, 94, 0.08), transparent 45%),
       linear-gradient(rgb(250 245 236 / 78%), rgb(250 245 236 / 86%)),
-      url(/public/images/prueba_HeroBG.jpg) center center / cover no-repeat;
+      url(public/images/prueba_HeroBG.jpg) center center / cover no-repeat;
     will-change: transform, filter;
   }
   .bg-photo-layer::after {
@@ -168,9 +189,13 @@
     justify-content: center;
   }
 
+  /* fill-mode "backwards" (antes "forwards"): con forwards la animación
+     seguía "sujetando" opacity/transform para siempre y pisaba los estilos
+     que el parallax de app.js escribe en cada scroll (el texto no se movía
+     y el contador no se desvanecía). Con backwards solo manda durante el
+     retardo + la entrada; después el control vuelve al JS. */
   .hero-names, .hero-date, .hero-sub, .quote, .block {
-    opacity: 0;
-    animation: heroReveal 1s ease forwards;
+    animation: heroReveal 1s ease backwards;
   }
   .hero-date { animation-delay: .2s; }
   .hero-names { animation-delay: .4s; }
@@ -179,10 +204,16 @@
   .block { animation-delay: 1s; }
 
   @keyframes heroReveal {
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
   .hero-pin > * { position: relative; z-index: 1; }
+  /* Halo claro: el texto del hero (sobre todo la fecha dorada) se perdía
+     sobre el follaje de la foto. */
+  .hero-date, .hero-names, .hero-sub, .countdown-title, .counters {
+    text-shadow: 0 0 14px rgba(250, 245, 236, 0.95), 0 0 4px rgba(250, 245, 236, 0.8);
+  }
 
   .music-toggle {
     position: fixed;
@@ -199,7 +230,7 @@
   }
   .music-toggle:hover { background: rgba(74, 70, 65, 0.78); }
   .music-toggle svg { width: 26px; height: 26px; }
-  .music-toggle.playing { background: var(--gold); }
+  .music-toggle.playing { background: var(--btn); }
 
   .hero-top-ornament { display: block; margin: 6px auto 60px; width: 220px; height: 70px; }
 
@@ -228,7 +259,7 @@
     display: inline-grid; place-items: center;
     width: 26px; height: 26px;
     border-radius: 50%;
-    background: var(--gold);
+    background: var(--btn);
     color: #fff;
     font-family: "Cormorant Infant", serif;
     font-style: italic;
@@ -238,6 +269,9 @@
     margin: 0 6px;
     line-height: 1;
   }
+  /* El "&" ocupa su propia línea, centrado entre los dos nombres (antes quedaba
+     como una pastilla suelta pegada a "Eugenio") */
+  .hero-names .amp { display: grid !important; margin: 4px auto !important; vertical-align: baseline !important; }
   .hero-rule { width: 240px; height: 1px; background: var(--ink); opacity: 0.55; margin: 14px auto 12px; }
   .hero-sub {
     font-family: "Cormorant Garamond", serif;
@@ -288,12 +322,7 @@
   .counter {
     text-align: center;
     position: relative;
-    animation: floatUp .8s ease forwards;
   }
-  .counter:nth-child(1){animation-delay:.1s;}
-  .counter:nth-child(2){animation-delay:.2s;}
-  .counter:nth-child(3){animation-delay:.3s;}
-  .counter:nth-child(4){animation-delay:.4s;}
   .counter + .counter::before {
     content: "";
     position: absolute;
@@ -387,6 +416,7 @@
   .event-card {
     background: var(--card);
     border-radius: 10px;
+    border: 1px solid var(--card-line);
     padding: 20px 14px 16px;
     text-align: center;
     box-shadow: var(--shadow-card);
@@ -411,11 +441,12 @@
 
   /* ====== Pill button ====== */
   .btn-pill {
-    display: inline-block;
-    background: var(--gold);
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 44px; /* zona táctil mínima recomendada */
+    background: var(--btn);
     color: #fff;
     font-family: "Karla", sans-serif;
-    font-weight: 500; font-size: 11px;
+    font-weight: 600; font-size: 11px;
     letter-spacing: 0.08em;
     padding: 9px 22px;
     border-radius: 999px;
@@ -425,7 +456,7 @@
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     box-shadow: 0 1px 0 rgba(0,0,0,0.04);
   }
-  .btn-pill:hover { background: var(--gold-deep); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(180, 147, 63, 0.3); }
+  .btn-pill:hover { background: var(--btn-hover); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(125, 97, 34, 0.35); }
   .btn-pill:active { transform: translateY(0); }
   .btn-pill.lg { font-size: 12px; padding: 11px 30px; }
   .btn-pill:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
@@ -477,6 +508,7 @@
   .fiesta-card {
     background: var(--card);
     border-radius: 10px;
+    border: 1px solid var(--card-line);
     padding: 20px 12px 20px;
     text-align: center;
     box-shadow: var(--shadow-card);
@@ -497,17 +529,17 @@
 
 
   /* ====== Footer ====== */
-  .footer { padding: 56px 28px 36px; display: grid; gap: 20px; align-items: start; text-align: left; }
-  .footer-brand { text-align: left; }
+  .footer { padding: 56px 28px 36px; display: grid; gap: 20px; align-items: start; text-align: center; }
+  .footer-brand { text-align: center; }
   .footer-names { font-family: "Cormorant Infant", serif; font-weight: 500; font-size: 22px; color: var(--ink); line-height: 1.1; margin: 0; }
   .footer-names .amp { width: 20px; height: 20px; font-size: 14px; vertical-align: 4px; }
-  .footer-rule { width: 130px; height: 1px; background: var(--ink); opacity: 0.55; margin: 8px 0 6px; }
+  .footer-rule { width: 130px; height: 1px; background: var(--ink); opacity: 0.55; margin: 8px auto 6px; }
   .footer-sub { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold-deep); font-size: 13px; margin: 0; }
-  .footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 14px; font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 14px; }
+  .footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 14px; }
   .footer-links li + li { position: relative; padding-left: 14px; }
   .footer-links li + li::before { content: "·"; position: absolute; left: 0; color: var(--gold); }
-  .footer-links a { color: var(--gold-deep); text-decoration: none; transition: color 0.15s; background: none; border: none; cursor: pointer; font: inherit; text-align: left; padding: 0; }
-  .footer-links a:hover { color: var(--gold-deep); text-decoration: underline; }
+  .footer-links a, .footer-links button { color: var(--gold-deep); text-decoration: none; transition: color 0.15s; background: none; border: none; cursor: pointer; font: inherit; text-align: left; padding: 10px 0; }
+  .footer-links a:hover, .footer-links button:hover { color: var(--gold-deep); text-decoration: underline; }
   .credit { grid-column: 1 / -1; text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid #eee; font-family: "Karla", sans-serif; font-size: 11px; color: var(--ink-soft); }
   .credit .heart { color: var(--gold); }
 
@@ -570,9 +602,9 @@
   }
   .modal-field:focus { border-color: var(--gold); background: #fff; }
   .modal-row { display: flex; gap: 10px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
-  .btn-pill.outline { background: transparent; color: var(--gold-deep); border: 1px solid var(--gold); }
-  .btn-pill.outline:hover { background: var(--gold); color: #fff; }
-  .btn-pill.outline.selected { background: var(--gold); color: #fff; }
+  .btn-pill.outline { background: transparent; color: var(--btn); border: 1px solid var(--gold); }
+  .btn-pill.outline:hover { background: var(--btn-hover); color: #fff; }
+  .btn-pill.outline.selected { background: var(--btn); color: #fff; }
 
   .modal-link { color: var(--gold-deep); text-decoration: none; font-weight: 600; position: relative; transition: color .25s ease; }
   .modal-link::after { content: ""; position: absolute; left: 0; bottom: -2px; width: 100%; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: center; transition: transform .3s ease; }
@@ -583,7 +615,7 @@
   .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 200; display: none; align-items: center; justify-content: center; }
   .lightbox.open { display: flex; }
   .lightbox img { max-width: 90vw; max-height: 86vh; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-  .lightbox .close { position: absolute; top: calc(18px + var(--safe-top)); right: 22px; color: #fff; background: none; border: none; font-size: 32px; cursor: pointer; }
+  .lightbox .close { position: absolute; top: calc(10px + var(--safe-top)); right: 12px; width: 48px; height: 48px; color: #fff; background: none; border: none; font-size: 32px; line-height: 1; cursor: pointer; }
   .lightbox .nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: #fff; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 24px; }
   .lightbox .nav.prev { left: 16px; }
   .lightbox .nav.next { right: 16px; }
@@ -608,9 +640,26 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  .field-error { color: #b4443f; font-size: 11px; font-family: "Karla", sans-serif; margin: -6px 0 10px; text-align: left; display: none; }
+  .form-fallback { margin: 4px 0 0; padding: 14px; border-radius: 8px; background: #fbf3e0; font-family: "Karla", sans-serif; font-size: 14px; color: var(--ink); }
+  .form-fallback p { margin: 0 0 10px; }
+  .field-error { color: #b4443f; font-size: 12px; font-family: "Karla", sans-serif; margin: -6px 0 10px; text-align: left; display: none; }
   .field-error.show { display: block; }
   .modal-field.invalid { border-color: #b4443f; }
+
+  /* ====== Escritorio / tablet: la tarjeta mide 440px pero los textos eran de
+     10–12px (solo se agrandaban en ≤480px). Se igualan a la escala móvil. ====== */
+  @media (min-width: 481px) {
+    .counter-label { font-size: 13px; }
+    .event-detail { font-size: 14px; }
+    .event-sub { font-size: 18px; }
+    .btn-pill { font-size: 13px; }
+    .btn-pill.lg { font-size: 14px; }
+    .fiesta-card p, .fiesta-card.large p { font-size: 13px; min-height: 0; }
+    .fiesta-card .btn-pill { font-size: 12.5px; }
+    .confirm .lead, .fiesta-outer-card .lead { font-size: 15px; }
+    .footer-sub, .footer-links, .credit { font-size: 14px; }
+    .field-error { font-size: 13px; }
+  }
 
   /* ====== Mobile Optimization — escala más grande e impactante ====== */
   @media (max-width: 480px) {
@@ -672,9 +721,9 @@
     .footer { padding: 30px 18px calc(22px + var(--safe-bottom)); gap: 14px; }
     .footer-names { font-size: 22px; }
     .footer-names .amp { width: 19px !important; height: 19px !important; font-size: 14px !important; vertical-align: 3px !important; }
-    .footer-rule { width: 100px; margin: 8px 0 6px; }
+    .footer-rule { width: 100px; margin: 8px auto 6px; }
     .footer-sub { font-size: 14px; }
-    .footer-links { font-size: 14px; gap: 6px; }
+    .footer-links { font-size: 14px; gap: 6px; justify-content: center; }
     .footer-links a { font-size: 14px; }
     .credit { font-size: 12px; margin-top: 14px; padding-top: 12px; }
     .modal { width: calc(100vw - 24px); max-width: 100%; padding: 30px 22px 22px; }
@@ -852,7 +901,7 @@
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
   }
-  .to-top-btn:hover { background: var(--gold); }
+  .to-top-btn:hover { background: var(--btn); }
   .to-top-btn.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
   .to-top-btn svg { width: 20px; height: 20px; }
 
@@ -870,9 +919,18 @@
 <div id="app" class="stage"></div>
 
 <noscript>
+  <style>#boot-loader { display: none !important; }</style>
   Esta invitación necesita JavaScript habilitado para mostrarse correctamente. Eugenio &amp; Esther te esperan el 03 de Julio de 2027 en Vara Restaurante &amp; Eventos, Illescas (Toledo).
 </noscript>
 
-<script src="/app.js" defer></script>
+<script src="app.js" defer></script>
+<script>
+  // Red de seguridad: si app.js fallara, el loader no se queda tapando la
+  // pantalla para siempre.
+  setTimeout(function () {
+    var l = document.getElementById("boot-loader");
+    if (l) { l.classList.add("hide"); setTimeout(function () { l.remove(); }, 600); }
+  }, 8000);
+</script>
 </body>
 </html>

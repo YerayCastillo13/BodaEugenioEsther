@@ -17,7 +17,11 @@
     iban: "ES12 3456 7890 1234 5678 9012",
     titulares: "Eugenio & Esther",
     instagramTag: "eugenio&esther",
-    photos: ["public/images/Foto1.jpeg", "public/images/Foto2.jpeg", "public/images/Foto3.jpeg"],
+    photos: [
+      "public/images/galeria/01.jpg", "public/images/galeria/02.jpg", "public/images/galeria/03.jpg",
+      "public/images/galeria/04.jpg", "public/images/galeria/05.jpg", "public/images/galeria/06.jpg",
+      "public/images/galeria/07.jpg", "public/images/galeria/08.jpg"
+    ],
     mapsQuery: "Vara Restaurante Eventos Illescas",
     mapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3049.2399947399226!2d-3.8229810236076127!3d40.1592099712721!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f0fb53100e8d%3A0xb43087d21c660557!2sVara%20Restaurante%20%26%20Eventos!5e0!3m2!1ses!2ses!4v1781039870428!5m2!1ses!2ses",
     // Fase 3: aquí irá la URL del Google Apps Script Web App
@@ -326,7 +330,7 @@
       var abs = Math.abs(order);
       if (abs > 2) { slide.style.display = "none"; return; }
       slide.style.display = "";
-      var translate = order * 150;
+      var translate = order * 160;
       var scale = order === 0 ? 1.1 : 0.78;
       var opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : 0.4;
       slide.style.zIndex = 10 - abs;
@@ -912,6 +916,13 @@
       if (bg) {
         bg.style.transform = "translate3d(0," + moveY + "px,0) scale(" + scale + ")";
         bg.style.filter = "brightness(" + (1 + brightnessProgress * 0.18) + ")";
+        // El velo crema se aclara solo un poco con el scroll (antes llegaba a
+        // 22%, demasiado transparente para el footer y los elementos sueltos):
+        // el fondo gana algo de color sin perder legibilidad.
+        var veilP = Math.min(1, brightnessProgress / 0.7);
+        var veilE = 1 - Math.pow(1 - veilP, 2);
+        bg.style.setProperty("--veil-top", (0.58 - 0.10 * veilE).toFixed(3));
+        bg.style.setProperty("--veil-bot", (0.72 - 0.12 * veilE).toFixed(3));
       }
 
       // Capas de texto a distinta velocidad, con más desfase entre ellas para

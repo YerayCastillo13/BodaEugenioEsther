@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <!-- Preload de la imagen de fondo del hero: es lo primero que ve el invitado -->
-<link rel="preload" as="image" href="public/images/prueba_HeroBG.jpg">
+<link rel="preload" as="image" href="public/images/fondo.jpg">
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Infant:ital,wght@0,400;0,500;0,600;1,400&family=Quattrocento:wght@400;700&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="public/favicon/favicon-32x32.png">
@@ -31,8 +31,8 @@
     --gold: #d5b15e;
     --gold-soft: #e0c179;
     --gold-deep: #8a6e22; /* oscurecido: el anterior (#b4933f) daba ~3:1 sobre blanco; este ≥4.5:1 */
-    --ink: #4a4641;
-    --ink-soft: #6e6862;
+    --ink: #38302a;       /* marrón oscuro cálido (antes #4a4641): más contraste sobre foto y cristal */
+    --ink-soft: #5a5047;  /* antes #6e6862 */
     --cream: #f6f1e9;
     --cream-deep: #efe7d6;
     /* Paleta "oro antiguo": el dorado claro (--gold) queda para ornamentos y
@@ -131,6 +131,17 @@
     z-index: 1;
     padding: 18px 0 18px;
   }
+  /* Halo crema tras el adorno. Es un pseudo-elemento MÁS GRANDE que la caja y
+     con "closest-side": se desvanece a 0 antes de tocar su borde, así no
+     aparecen cortes rectos (antes el degradado se recortaba en la caja). */
+  .section-divider-fade::before {
+    content: "";
+    position: absolute;
+    inset: -34px -46px;
+    background: radial-gradient(closest-side, rgba(255, 250, 244, 0.80) 0%, rgba(255, 250, 244, 0.45) 55%, rgba(255, 250, 244, 0) 100%);
+    z-index: -1;
+    pointer-events: none;
+  }
   .top-ornament-lg { width: 130px; height: 88px; margin: 0 auto 26px; display: block; }
 
   /* ====== Fondo foto, encajado al ancho de la tarjeta (.invite) ======
@@ -160,8 +171,12 @@
     background:
       radial-gradient(circle at 20% 12%, rgba(213, 177, 94, 0.10), transparent 40%),
       radial-gradient(circle at 80% 90%, rgba(213, 177, 94, 0.08), transparent 45%),
-      linear-gradient(rgb(250 245 236 / 78%), rgb(250 245 236 / 86%)),
-      url(public/images/prueba_HeroBG.jpg) center center / cover no-repeat;
+      /* velo traslúcido: deja ver la foto de cerca pero mantiene legibles los textos */
+      /* --veil-top/--veil-bot los actualiza app.js con el scroll: arranca fuerte
+         (textos legibles) y se aclara poco a poco, así el fondo "se va
+         poniendo" mientras bajas. */
+      linear-gradient(rgb(250 245 236 / var(--veil-top, 0.58)), rgb(250 245 236 / var(--veil-bot, 0.72))),
+      url(public/images/fondo.jpg) center center / cover no-repeat;
     will-change: transform, filter;
   }
   .bg-photo-layer::after {
@@ -209,11 +224,26 @@
   }
 
   .hero-pin > * { position: relative; z-index: 1; }
-  /* Halo claro: el texto del hero (sobre todo la fecha dorada) se perdía
-     sobre el follaje de la foto. */
-  .hero-date, .hero-names, .hero-sub, .countdown-title, .counters {
-    text-shadow: 0 0 14px rgba(250, 245, 236, 0.95), 0 0 4px rgba(250, 245, 236, 0.8);
+  /* "Mancha" de luz suave tras todo el bloque de texto: aclara la foto solo
+     donde hay texto, sin apagarla en el resto. */
+  .hero-pin::before {
+    content: "";
+    position: absolute;
+    left: -12%; right: -12%; top: 6%; bottom: 8%;
+    background: radial-gradient(ellipse 62% 50% at 50% 50%, rgba(250, 245, 236, 0.66) 0%, rgba(250, 245, 236, 0.38) 55%, rgba(250, 245, 236, 0) 100%);
+    z-index: 0;
+    pointer-events: none;
   }
+  /* Halo + textos más oscuros y con más peso en el hero */
+  .hero-date, .hero-names, .hero-sub, .countdown-title, .counters {
+    text-shadow: 0 0 14px rgba(250, 245, 236, 0.95), 0 0 5px rgba(250, 245, 236, 0.9), 0 1px 1px rgba(250, 245, 236, 0.6);
+  }
+  .hero-date { color: #6b5217; font-weight: 600; }
+  .hero-sub { color: #6b5217; font-weight: 600; }
+  .hero-names { color: #2b241f; font-weight: 600; }
+  .countdown-title { color: #2b241f; }
+  .counter-num { color: #6b5217; font-weight: 600; }
+  .counter-label { color: #3d342c; font-weight: 600; }
 
   .music-toggle {
     position: fixed;
@@ -416,6 +446,7 @@
   .event-card {
     background: var(--card);
     border-radius: 10px;
+    background: rgba(255, 255, 255, 0.92);
     border: 1px solid var(--card-line);
     padding: 20px 14px 16px;
     text-align: center;
@@ -470,11 +501,12 @@
   .gallery-wrap { padding: 0; text-align: center; }
   .camera-icon { width: 36px; height: 36px; color: var(--gold); margin: 0 auto 14px; display: block; animation: bounce 2s ease-in-out infinite; }
   @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-  .carousel { position: relative; height: 300px; margin-bottom: 14px; }
+  .carousel { position: relative; height: 390px; margin-bottom: 14px; }
   .carousel-track { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
   .slide {
     position: absolute;
-    width: 270px; height: 195px;
+    /* Retrato 3:4 (las fotos son verticales; antes 270×195 apaisado las recortaba) */
+    width: 225px; height: 300px;
     background: var(--card);
     overflow: hidden;
     border-radius: 8px;
@@ -483,7 +515,12 @@
     cursor: pointer;
   }
   .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .dots { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+  .dots {
+    display: flex; justify-content: center; gap: 8px; margin: 10px auto 0;
+    width: fit-content; padding: 2px 12px; border-radius: 999px;
+    background: rgba(255, 250, 244, 0.78);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
   /* zona táctil real de 32px aunque el punto visible sea pequeño (evita mis-taps en móvil) */
   .dot {
     width: 32px; height: 32px;
@@ -500,8 +537,8 @@
   /* ====== Fiesta ====== */
   .fiesta-intro { text-align: center; }
   /* Card grande que envuelve título + las dos subcards de Tips/Alojamiento */
-  .fiesta-outer-card { padding: 32px 26px 28px; background: rgba(239, 231, 214, 0.86); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  .fiesta-outer-card .fiesta-card { background: rgba(255, 255, 255, 0.82); }
+  .fiesta-outer-card { padding: 32px 26px 28px; background: linear-gradient(160deg, rgba(253, 238, 220, 0.80), rgba(250, 226, 200, 0.72)); backdrop-filter: blur(16px) saturate(1.25); -webkit-backdrop-filter: blur(16px) saturate(1.25); }
+  .fiesta-outer-card .fiesta-card { background: rgba(255, 255, 255, 0.9); }
   .fiesta-outer-card .section-title { font-size: 28px; margin-bottom: 6px; }
   .fiesta-outer-card .lead { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold-deep); font-size: 13px; margin: 0 auto; line-height: 1.4; max-width: 320px; }
   .fiesta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 22px 0 0; }
@@ -529,7 +566,16 @@
 
 
   /* ====== Footer ====== */
-  .footer { padding: 56px 28px 36px; display: grid; gap: 20px; align-items: start; text-align: center; }
+  /* El footer iba directo sobre la foto: ahora lleva su propio panel de cristal
+     translúcido (igual que las cards), así se lee con cualquier parte del fondo. */
+  .footer {
+    padding: 56px 28px 36px; display: grid; gap: 20px; align-items: start; text-align: center;
+    position: relative; z-index: 2;
+    background: linear-gradient(160deg, rgba(255, 253, 250, 0.86), rgba(255, 246, 236, 0.80));
+    backdrop-filter: blur(16px) saturate(1.25);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
+    border-top: 1px solid rgba(255, 255, 255, 0.7);
+  }
   .footer-brand { text-align: center; }
   .footer-names { font-family: "Cormorant Infant", serif; font-weight: 500; font-size: 22px; color: var(--ink); line-height: 1.1; margin: 0; }
   .footer-names .amp { width: 20px; height: 20px; font-size: 14px; vertical-align: 4px; }
@@ -538,7 +584,8 @@
   .footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 14px; }
   .footer-links li + li { position: relative; padding-left: 14px; }
   .footer-links li + li::before { content: "·"; position: absolute; left: 0; color: var(--gold); }
-  .footer-links a, .footer-links button { color: var(--gold-deep); text-decoration: none; transition: color 0.15s; background: none; border: none; cursor: pointer; font: inherit; text-align: left; padding: 10px 0; }
+  .footer-sub { font-weight: 600; }
+  .footer-links a, .footer-links button { color: var(--btn-hover); font-weight: 600; text-decoration: none; transition: color 0.15s; background: none; border: none; cursor: pointer; font: inherit; text-align: left; padding: 10px 0; }
   .footer-links a:hover, .footer-links button:hover { color: var(--gold-deep); text-decoration: underline; }
   .credit { grid-column: 1 / -1; text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid #eee; font-family: "Karla", sans-serif; font-size: 11px; color: var(--ink-soft); }
   .credit .heart { color: var(--gold); }
@@ -702,8 +749,8 @@
     .confirm .lead { font-size: 16px; margin-bottom: 22px; }
     .gallery-wrap { padding: 0; }
     .camera-icon { width: 42px; height: 42px; margin-bottom: 18px; }
-    .carousel { height: 300px; margin-bottom: 14px; }
-    .slide { width: 270px; height: 195px; }
+    .carousel { height: 390px; margin-bottom: 14px; }
+    .slide { width: 225px; height: 300px; }
     .dots { gap: 8px; margin-top: 8px; }
     .fiesta-outer-card { padding: 30px 18px 26px; }
     .fiesta-outer-card .section-title { font-size: 32px; margin-bottom: 11px; }
@@ -738,11 +785,15 @@
   .confirm, .events, .fiesta-intro {
     position: relative;
     z-index: 2;
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    /* Cristal esmerilado con un toque cálido: deja pasar el color del fondo
+       (antes blanco casi opaco) y mantiene el texto oscuro bien legible. */
+    background: linear-gradient(160deg, rgba(255, 253, 250, 0.80), rgba(255, 246, 236, 0.72));
+    backdrop-filter: blur(16px) saturate(1.25);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
+    border: 1px solid rgba(255, 255, 255, 0.65);
     border-radius: 18px;
     margin: 40px 12px;
+    box-shadow: 0 10px 34px rgba(120, 70, 30, 0.14);
   }
   /* La galería no lleva caja: solo el carrusel flotando sobre el fondo. */
   .gallery-wrap {
